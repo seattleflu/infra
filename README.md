@@ -6,7 +6,15 @@ Followed [these instructions](https://docs.ansible.com/ansible/latest/installati
 
 ## Create a basic inventory
 
-I added `backoffice.seattleflu.org` to `/etc/ansible/hosts`.
+In `/etc/ansible/hosts`:
+
+```ini
+[dev]
+localhost
+
+[prod]
+backoffice.seattleflu.org
+```
 
 ## Create a basic playbook
 
