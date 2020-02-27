@@ -1,6 +1,12 @@
+# TODO: for production:
+#
+# - hosts: backoffice.seattleflu.org
+#   remote_user: ubuntu
+#
+# See https://www.middlewareinventory.com/blog/run-ansible-playbook-locally/
 ---
-  - hosts: backoffice.seattleflu.org
-    remote_user: ubuntu
+  - hosts: localhost
+    connection: local
     tasks:
     - name: Ensure the repo has been cloned locally
       git:
