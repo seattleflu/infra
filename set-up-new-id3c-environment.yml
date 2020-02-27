@@ -1,0 +1,10 @@
+---
+  - hosts: backoffice.seattleflu.org
+    remote_user: ubuntu
+    tasks:
+    - name: Ensure the repo has been cloned locally
+      git:
+        repo: 'https://github.com/seattleflu/backoffice.git'
+        dest: /opt/backoffice
+        clone: no
+        update: no
