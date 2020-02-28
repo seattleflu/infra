@@ -23,3 +23,6 @@
 
     - name: Copy the `id3c-production` directory, renaming it to `{{ environment_name }}`
       shell: "cp -r {{ backoffice_destination }}/id3c-production {{ backoffice_destination}}/{{ environment_name }}"
+
+    - name: Update the README to use the new environment name
+      shell: "sed -i -e 's/production/restricted/g' {{ backoffice_destination }}/{{ environment_name }}/README.md"  # TODO hard-coded env name
