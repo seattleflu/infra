@@ -20,3 +20,6 @@
 
     - name: Change directories and create new branch named after environment name «{{ environment_name }}»
       shell: "cd {{backoffice_destination}} && git checkout -b {{ environment_name }}"
+
+    - name: Copy the `id3c-production` directory, renaming it to `{{ environment_name }}`
+      shell: "cp -r {{ backoffice_destination }}/id3c-production {{ backoffice_destination}}/{{ environment_name }}"
