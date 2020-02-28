@@ -2,6 +2,8 @@
 #
 # - hosts: backoffice.seattleflu.org
 #   remote_user: ubuntu
+#   vars:
+#     backoffice_destination: /opt/backoffice
 #
 # See https://www.middlewareinventory.com/blog/run-ansible-playbook-locally/
 ---
@@ -9,13 +11,12 @@
     connection: local
     vars:
       environment_name: id3c-restricted
+      backoffice_destination: ~/seattleflu/backoffice  # TODO
     tasks:
     - name: Ensure the repo has been cloned locally
       git:
         repo: 'https://github.com/seattleflu/backoffice.git'
-        dest: /opt/backoffice
-        clone: no
-        update: no
+        dest: "{{ backoffice_destination }}"
 
     - name: Create a new branch
       shell: "git checkout -b {{ environment_name }}"
