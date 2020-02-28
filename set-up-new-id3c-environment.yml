@@ -24,5 +24,20 @@
     - name: Copy the `id3c-production` directory, renaming it to `{{ environment_name }}`
       shell: "cp -r {{ backoffice_destination }}/id3c-production {{ backoffice_destination}}/{{ environment_name }}"
 
+    - name: Commit the changes so far
+      shell: "cd {{ backoffice_destination }} && git add --all && git commit -m 'Copy id3c-production directory'"
+
     - name: Update the README to use the new environment name
       shell: "sed -i -e 's/production/restricted/g' {{ backoffice_destination }}/{{ environment_name }}/README.md"  # TODO hard-coded env name
+
+    - name: Commit the changes so far
+      shell: "cd {{ backoffice_destination }} && git add {{ environment_name }}/README.md && git commit -m '{{ environment_name }}: Update README'"
+
+    - name: Install required dependencies
+      shell: pipenv sync
+
+    - name: Test installation
+      shell: pipenv run id3c
+
+    # - name: CLEANUP remove git branch
+    #   shell: "cd {{ backoffice_destination }} && git checkout master && git branch -D {{ environment_name }} && rm -rf {{ environment_name }}"
