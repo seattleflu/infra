@@ -19,25 +19,35 @@
         dest: "{{ backoffice_destination }}"
 
     - name: Change directories and create new branch named after environment name «{{ environment_name }}»
-      shell: "cd {{backoffice_destination}} && git checkout -b {{ environment_name }}"
+      shell:
+        cmd: "git checkout -b {{ environment_name }}"
+        chdir: "{{backoffice_destination}}"
 
     - name: Copy the `id3c-production` directory, renaming it to `{{ environment_name }}`
       shell: "cp -r {{ backoffice_destination }}/id3c-production {{ backoffice_destination}}/{{ environment_name }}"
 
     - name: Commit the changes so far
-      shell: "cd {{ backoffice_destination }} && git add --all && git commit -m 'Copy id3c-production directory'"
+      shell:
+        cmd: "git add --all && git commit -m 'Copy id3c-production directory'"
+        chdir: "{{ backoffice_destination }}"
 
     - name: Update the README to use the new environment name
       shell: "sed -i -e 's/production/restricted/g' {{ backoffice_destination }}/{{ environment_name }}/README.md"  # TODO hard-coded env name
 
     - name: Commit the changes so far
-      shell: "cd {{ backoffice_destination }} && git add {{ environment_name }}/README.md && git commit -m '{{ environment_name }}: Update README'"
+      shell:
+        cmd: "git add {{ environment_name }}/README.md && git commit -m '{{ environment_name }}: Update README'"
+        chdir: "{{ backoffice_destination }}"
 
     - name: Install required dependencies
-      shell: pipenv sync
+      shell:
+        cmd: pipenv sync
+        chdir: "{{ backoffice_destination }}/{{ environment_name }}"
 
     - name: Test installation
-      shell: pipenv run id3c
+      shell:
+        cmd: pipenv run id3c
+        chdir: "{{ backoffice_destination }}/{{ environment_name }}"
 
     # - name: CLEANUP remove git branch
     #   shell: "cd {{ backoffice_destination }} && git checkout master && git branch -D {{ environment_name }} && rm -rf {{ environment_name }}"
