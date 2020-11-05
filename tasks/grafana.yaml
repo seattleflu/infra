@@ -1,0 +1,22 @@
+---
+- name: grafana apt repository key is trusted
+  apt_key:
+    id: 4E40DDF6D76E284A4A6780E48C8C34C524098CB6
+    url: https://packages.grafana.com/gpg.key
+
+- name: grafana apt repository is configured
+  apt_repository:
+    repo: deb https://packages.grafana.com/oss/deb stable main
+    state: present
+    filename: grafana
+
+- name: grafana is installed
+  apt:
+    package:
+      - grafana
+
+- name: grafana is enabled
+  service:
+    name: grafana-server
+    enabled: yes
+    state: started

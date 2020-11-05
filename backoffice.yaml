@@ -9,6 +9,7 @@
   tasks:
     - import_tasks: tasks/systemd.yaml
     - import_tasks: tasks/prometheus.yaml
+    - import_tasks: tasks/grafana.yaml
     - import_tasks: tasks/uwsgi.yaml
 
   handlers:
