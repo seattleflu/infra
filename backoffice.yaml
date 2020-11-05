@@ -22,7 +22,7 @@
 
     - name: prometheus settings are configured
       copy:
-        src: files/prometheus.yml
+        src: files/etc/prometheus/prometheus.yml
         dest: /etc/prometheus/prometheus.yml
         owner: root
         group: root
