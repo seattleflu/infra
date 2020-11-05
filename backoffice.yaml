@@ -1,0 +1,60 @@
+---
+- name: prometheus
+  hosts: backoffice
+  remote_user: ubuntu
+  become: true
+
+  tasks:
+    - name: prometheus and exporters are installed
+      apt:
+        package:
+          - prometheus
+          - prometheus-node-exporter
+          - prometheus-apache-exporter
+
+    - name: prometheus invocation is configured
+      lineinfile:
+        path: /etc/default/prometheus
+        regexp: '^ARGS='
+        line: 'ARGS="--web.listen-address=127.0.0.1:9090 --web.external-url=https://{{inventory_hostname}}/prometheus/ --web.route-prefix=/"'
+      notify:
+        - prometheus is restarted
+
+    - name: prometheus settings are configured
+      copy:
+        src: files/prometheus.yml
+        dest: /etc/prometheus/prometheus.yml
+        owner: root
+        group: root
+        mode: u=rw,go=r
+      notify:
+        - prometheus is reloaded
+
+    - name: prometheus is enabled
+      service:
+        name: prometheus
+        enabled: yes
+        state: started
+
+    - name: prometheus-node-exporter is enabled
+      service:
+        name: prometheus-node-exporter
+        enabled: yes
+        state: started
+
+    - name: prometheus-apache-exporter is enabled
+      service:
+        name: prometheus-apache-exporter
+        enabled: yes
+        state: started
+
+  handlers:
+    - name: prometheus is restarted
+      service:
+        name: prometheus
+        state: restarted
+
+    - name: prometheus is reloaded
+      service:
+        name: prometheus
+        state: reloaded
