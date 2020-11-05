@@ -33,6 +33,11 @@
         name: prometheus
         state: reloaded
 
+    - name: prometheus-node-exporter is restarted
+      service:
+        name: prometheus-node-exporter
+        state: restarted
+
     - name: promtail is restarted
       service:
         name: promtail
