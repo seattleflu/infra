@@ -3,13 +3,19 @@ scrape_configs:
   - job_name: prometheus
     static_configs:
       - targets: ['localhost:9090']
+        labels:
+          instance: backoffice
 
   # Metrics about the host, from node-exporter
   - job_name: host
     static_configs:
       - targets: ['localhost:9100']
+        labels:
+          instance: backoffice
 
   # Metrics about Apache, from apache-exporter
   - job_name: apache
     static_configs:
       - targets: ['localhost:9117']
+        labels:
+          instance: backoffice
