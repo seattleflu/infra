@@ -99,3 +99,12 @@ For troubleshooting, you can get a shell on your new instance at any point
 with:
 
     multipass shell backoffice
+
+If you want to start from a clean slate, delete the `backoffice` instance and
+SSH's remembered host key (to avoid errors about the new instance's different
+host key):
+
+    multipass delete --purge backoffice
+    ssh-keygen -R backoffice.multipass
+
+Then re-create the instance as above.
