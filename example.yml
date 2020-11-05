@@ -1,6 +1,0 @@
----
-  - hosts: backoffice.seattleflu.org
-    remote_user: ubuntu
-    tasks:
-    - name: test
-      shell: cd /opt/ && mkdir "ansible-test"
