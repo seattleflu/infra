@@ -11,6 +11,7 @@
           - prometheus
           - prometheus-node-exporter
           - prometheus-apache-exporter
+        update_cache: true
 
     - name: prometheus invocation is configured
       lineinfile:
