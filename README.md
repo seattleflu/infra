@@ -78,10 +78,9 @@ Create a `backoffice` instance:
 
     multipass launch --name backoffice 18.04    # Ubuntu 18.04 LTS
 
-Add your own SSH public key (adjusting the file path to *id_rsa.pub* as
-necessary) so that Ansible can login via SSH:
+Add your SSH public keys so that Ansible can login via SSH:
 
-    multipass exec backoffice -- tee -a /home/ubuntu/.ssh/authorized_keys < ~/.ssh/id_rsa.pub
+    ssh-add -L | multipass exec backoffice -- tee -a /home/ubuntu/.ssh/authorized_keys
 
 Now test that Ansible can login by issuing an ad-hoc ping:
 
