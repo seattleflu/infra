@@ -1,8 +1,8 @@
-# Ansible for SFS
+# SFS Infrastructure
 
 Work-in-progress Ansible setup for Seattle Flu Study infrastructure.  Our
-intent is to describe our infrastructure setup with Ansible over time, piece by
-piece.
+intent is to describe our infrastructure setup with Ansible (and/or other
+tools) over time, piece by piece.
 
 Requirements for using this repository:
 
