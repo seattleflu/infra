@@ -3,6 +3,8 @@
   hosts: backoffice
   remote_user: ubuntu
   become: true
+  vars:
+    app_user: ubuntu
 
   tasks:
     - name: prometheus and exporters are installed
@@ -30,6 +32,25 @@
         mode: u=rw,go=r
       notify:
         - prometheus is reloaded
+
+    - name: prometheus-textfile group exists
+      group:
+        name: prometheus-textfile
+        system: yes
+
+    - name: 'user {{app_user}} is part of prometheus-textfile group'
+      user:
+        name: '{{app_user}}'
+        append: yes
+        groups:
+          - prometheus-textfile
+
+    - name: prometheus-textfile group can write to collector dir
+      file:
+        path: /var/lib/prometheus/node-exporter
+        state: directory
+        group: prometheus-textfile
+        mode: g=rwX
 
     - name: prometheus is enabled
       service:
