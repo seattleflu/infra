@@ -19,3 +19,12 @@ scrape_configs:
       - targets: ['localhost:9117']
         labels:
           instance: backoffice
+
+  # Metrics about Husky Musher
+  - job_name: husky-musher
+    metrics_path: /husky-musher/metrics
+    scheme: https
+    static_configs:
+      - targets: ['{{inventory_hostname}}']
+        labels:
+          instance: backoffice
