@@ -1,5 +1,5 @@
 ---
-- name: prometheus
+- name: backoffice
   hosts: backoffice
   remote_user: ubuntu
   become: true
@@ -7,68 +7,7 @@
     app_user: ubuntu
 
   tasks:
-    - name: prometheus and exporters are installed
-      apt:
-        package:
-          - prometheus
-          - prometheus-node-exporter
-          - prometheus-apache-exporter
-        update_cache: true
-
-    - name: prometheus invocation is configured
-      lineinfile:
-        path: /etc/default/prometheus
-        regexp: '^ARGS='
-        line: 'ARGS="--web.listen-address=127.0.0.1:9090 --web.external-url=https://{{inventory_hostname}}/prometheus/ --web.route-prefix=/"'
-      notify:
-        - prometheus is restarted
-
-    - name: prometheus settings are configured
-      template:
-        src: files/etc/prometheus/prometheus.yml
-        dest: /etc/prometheus/prometheus.yml
-        owner: root
-        group: root
-        mode: u=rw,go=r
-      notify:
-        - prometheus is reloaded
-
-    - name: prometheus-textfile group exists
-      group:
-        name: prometheus-textfile
-        system: yes
-
-    - name: 'user {{app_user}} is part of prometheus-textfile group'
-      user:
-        name: '{{app_user}}'
-        append: yes
-        groups:
-          - prometheus-textfile
-
-    - name: prometheus-textfile group can write to collector dir
-      file:
-        path: /var/lib/prometheus/node-exporter
-        state: directory
-        group: prometheus-textfile
-        mode: g=rwX
-
-    - name: prometheus is enabled
-      service:
-        name: prometheus
-        enabled: yes
-        state: started
-
-    - name: prometheus-node-exporter is enabled
-      service:
-        name: prometheus-node-exporter
-        enabled: yes
-        state: started
-
-    - name: prometheus-apache-exporter is enabled
-      service:
-        name: prometheus-apache-exporter
-        enabled: yes
-        state: started
+    - import_tasks: tasks/prometheus.yaml
 
   handlers:
     - name: prometheus is restarted
