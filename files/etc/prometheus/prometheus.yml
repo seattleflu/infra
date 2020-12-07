@@ -30,3 +30,12 @@ scrape_configs:
       - targets: ['{{inventory_hostname}}']
         labels:
           instance: backoffice
+
+  # Metrics from uWSGI apps
+  - job_name: uwsgi
+    file_sd_configs:
+      - files:
+          - /var/lib/prometheus/uwsgi-exporter/*.yaml
+    relabel_configs:
+      - target_label: instance
+        replacement: backoffice
