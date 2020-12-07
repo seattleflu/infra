@@ -9,6 +9,7 @@
   tasks:
     - import_tasks: tasks/systemd.yaml
     - import_tasks: tasks/prometheus.yaml
+    - import_tasks: tasks/uwsgi.yaml
 
   handlers:
     - name: prometheus is restarted
@@ -24,3 +25,13 @@
     - name: systemd is reloaded
       systemd:
         daemon_reload: yes
+
+    - name: uwsgi is restarted
+      service:
+        name: uwsgi
+        state: restarted
+
+    - name: uwsgi is reloaded
+      service:
+        name: uwsgi
+        state: reloaded
