@@ -20,6 +20,18 @@
     force: no
     backup: yes
 
+- name: uwsgi base config enables stats
+  community.general.ini_file:
+    path: /etc/uwsgi/base.ini
+    section: uwsgi
+    option: stats
+    # See the comments in /etc/uwsgi/base.ini (as copied from the original
+    # source above) for where these %(…) substitutions come from.
+    value: /run/uwsgi/%(deb-confnamespace)/%(deb-confname)/stats
+    backup: yes
+  notify:
+    - uwsgi is reloaded
+
 - name: uwsgi default invocation is configured
   lineinfile:
     path: /etc/default/uwsgi
