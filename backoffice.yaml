@@ -7,6 +7,7 @@
     app_user: ubuntu
 
   tasks:
+    - import_tasks: tasks/systemd.yaml
     - import_tasks: tasks/prometheus.yaml
 
   handlers:
@@ -19,3 +20,7 @@
       service:
         name: prometheus
         state: reloaded
+
+    - name: systemd is reloaded
+      systemd:
+        daemon_reload: yes
