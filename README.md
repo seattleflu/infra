@@ -12,6 +12,9 @@ Requirements for using this repository:
   - Ansible 2.9+, installed with your preferred
     [installation method](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
 
+  - Dependencies from Ansible Galaxy installed locally, using `ansible-galaxy
+    install -r requirements.yaml`
+
   - For production deployments: credentials for our infrastructure, e.g. an
     authorized SSH keypair for backoffice.seattleflu.org
 
