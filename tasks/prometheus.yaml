@@ -1,0 +1,96 @@
+---
+- name: prometheus and exporters are installed
+  apt:
+    package:
+      - prometheus
+      - prometheus-node-exporter
+      - prometheus-apache-exporter
+    update_cache: true
+
+- name: uwsgi_exporter is downloaded
+  unarchive:
+    remote_src: yes
+    src: https://github.com/timonwong/uwsgi_exporter/releases/download/v1.0.0/uwsgi_exporter-1.0.0.linux-amd64.tar.gz
+    dest: /usr/local/bin
+    owner: root
+    group: root
+    mode: u=rwX,go=rX
+    creates: /usr/local/bin/uwsgi_exporter-1.0.0.linux-amd64/uwsgi_exporter
+
+- name: uwsgi_exporter is installed
+  file:
+    state: link
+    path: /usr/local/bin/uwsgi_exporter
+    src: uwsgi_exporter-1.0.0.linux-amd64/uwsgi_exporter
+
+- name: uwsgi_exporter_for_app is installed
+  copy:
+    src: files/usr/local/bin/uwsgi_exporter_for_app
+    dest: /usr/local/bin/
+    owner: root
+    group: root
+    mode: u=rwx,go=rx
+
+- name: prometheus invocation is configured
+  lineinfile:
+    path: /etc/default/prometheus
+    regexp: '^ARGS='
+    line: 'ARGS="--web.listen-address=127.0.0.1:9090 --web.external-url=https://{{inventory_hostname}}/prometheus/ --web.route-prefix=/"'
+  notify:
+    - prometheus is restarted
+
+- name: prometheus settings are configured
+  template:
+    src: files/etc/prometheus/prometheus.yml
+    dest: /etc/prometheus/prometheus.yml
+    owner: root
+    group: root
+    mode: u=rw,go=r
+  notify:
+    - prometheus is reloaded
+
+- name: prometheus-textfile group exists
+  group:
+    name: prometheus-textfile
+    system: yes
+
+- name: 'user {{app_user}} is part of prometheus-textfile group'
+  user:
+    name: '{{app_user}}'
+    append: yes
+    groups:
+      - prometheus-textfile
+
+- name: prometheus-textfile group can write to collector dir
+  file:
+    path: /var/lib/prometheus/node-exporter
+    state: directory
+    group: prometheus-textfile
+    mode: g=rwX
+
+- name: prometheus user/group can write to scrape discovery dir
+  file:
+    path: /var/lib/prometheus/uwsgi-exporter
+    state: directory
+    owner: prometheus
+    group: prometheus
+    mode: ug=rwX,o=rX
+
+- name: prometheus is enabled
+  service:
+    name: prometheus
+    enabled: yes
+    state: started
+
+- name: prometheus-node-exporter is enabled
+  service:
+    name: prometheus-node-exporter
+    enabled: yes
+    state: started
+
+- name: prometheus-apache-exporter is enabled
+  service:
+    name: prometheus-apache-exporter
+    enabled: yes
+    state: started
+

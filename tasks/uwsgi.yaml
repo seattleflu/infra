@@ -1,0 +1,43 @@
+---
+- name: uwsgi is installed
+  apt:
+    package:
+      - uwsgi
+      - uwsgi-plugin-python3
+    update_cache: true
+
+- name: uwsgi is enabled
+  service:
+    name: uwsgi
+    enabled: yes
+    state: started
+
+- name: uwsgi base config exists
+  copy:
+    remote_src: true
+    src: /usr/share/uwsgi/conf/default.ini
+    dest: /etc/uwsgi/base.ini
+    force: no
+    backup: yes
+
+- name: uwsgi base config enables stats
+  community.general.ini_file:
+    path: /etc/uwsgi/base.ini
+    section: uwsgi
+    option: stats
+    # See the comments in /etc/uwsgi/base.ini (as copied from the original
+    # source above) for where these %(…) substitutions come from.
+    value: /run/uwsgi/%(deb-confnamespace)/%(deb-confname)/stats
+    backup: yes
+  notify:
+    - uwsgi is reloaded
+
+- name: uwsgi default invocation is configured
+  lineinfile:
+    path: /etc/default/uwsgi
+    regexp: '^INHERITED_CONFIG='
+    line: 'INHERITED_CONFIG=/etc/uwsgi/base.ini'
+  notify:
+    # Restart not reload since the actual options used to invoke uWSGI changed,
+    # not just the contents of its config files.
+    - uwsgi is restarted

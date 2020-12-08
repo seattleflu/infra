@@ -1,0 +1,13 @@
+[Unit]
+Description=Prometheus uWSGI exporter for %i
+After=uwsgi.service
+BindsTo=uwsgi.service
+
+[Service]
+User=prometheus
+Group=www-data
+ExecStart=/usr/local/bin/uwsgi_exporter_for_app %i
+Restart=always
+
+[Install]
+WantedBy=default.target
