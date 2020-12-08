@@ -24,7 +24,7 @@
         - prometheus is restarted
 
     - name: prometheus settings are configured
-      copy:
+      template:
         src: files/etc/prometheus/prometheus.yml
         dest: /etc/prometheus/prometheus.yml
         owner: root
