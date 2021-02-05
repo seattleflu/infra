@@ -34,6 +34,9 @@ The layout of this repository is:
       development   —   …in development
       production    —   …in production
 
+    tasks/          — Conceptual groupings of tasks for use by playbooks
+      …
+
     files/          — Static configuration files used by playbooks/tasks
       …
 
