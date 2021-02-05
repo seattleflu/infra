@@ -1,2 +1,6 @@
 [backoffice]
 backoffice.seattleflu.org
+
+[all:vars]
+production=True
+development=False
