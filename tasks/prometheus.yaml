@@ -5,7 +5,6 @@
       - prometheus
       - prometheus-node-exporter
       - prometheus-apache-exporter
-    update_cache: true
 
 - name: uwsgi_exporter is downloaded
   unarchive:
