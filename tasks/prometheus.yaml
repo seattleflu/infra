@@ -42,9 +42,9 @@
   template:
     src: files/etc/prometheus/prometheus.yml
     dest: /etc/prometheus/prometheus.yml
-    owner: root
-    group: root
-    mode: u=rw,go=r
+    owner: prometheus
+    group: prometheus
+    mode: ug=r,o=
   notify:
     - prometheus is reloaded
 

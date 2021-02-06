@@ -39,3 +39,17 @@ scrape_configs:
     relabel_configs:
       - target_label: instance
         replacement: backoffice
+
+{% if production %}
+remote_write:
+  - url: https://prometheus-us-central1.grafana.net/api/prom/push
+    basic_auth:
+      username: 39753
+      # In newer Prometheus versions I'd use password_file: here and let
+      # Prometheus read the file directly instead of inlining the contents, but
+      # the version we're using doesn't support that.  In the future, Ansible
+      # can be tweaked to copy this managed file to the remote host and point
+      # Prometheus at it directly.
+      #   -trs, 8 Feb 2021
+      password: '{{ lookup("file", "files/etc/prometheus/grafana-cloud-api-key") }}'
+{% endif %}
