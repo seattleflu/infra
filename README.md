@@ -72,6 +72,36 @@ statements that declare the desired state ("service X is started") instead of
 actions ("start service X").
 
 
+## Secrets
+
+Secrets such as passwords and API tokens are encrypted using [Ansible
+Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html) and
+stored in this repo.  Ansible Vault uses strong symmetric encryption with a
+single decryption password shared by all secrets stored in a logical "vault".
+Ansible automatically decrypts the secrets as necessary when they're referenced
+by playbooks but must be told how to obtain the vault password (e.g. by asking
+you, by reading a file, or by running another program).  This vault password is
+stored outside of Ansible, such as in your password manager of choice.
+
+We currently use a single `seattleflu` vault, which should be used for all
+secrets except in the very rare case of when the whole team should not have
+access to a secret.  Use the `--vault-id seattleflu@prompt` option when running
+`ansible`, `ansible-playbook`, or `ansible-vault` to both specify the
+`seattleflu` vault and be asked for the vault password.
+
+Please use encrypted files in preference to encrypted variables, as files are
+easier to re-encrypt later with a new password (e.g. when someone departs the
+team).
+
+To encrypt a file:
+
+    ansible-vault encrypt --vault-id seattleflu@prompt path/to/file
+
+To check an encrypted file's contents:
+
+    ansible-vault view --vault-id seattleflu@prompt path/to/file
+
+
 ## Multipass
 
 [Multipass](https://multipass.run) is a really nice CLI and GUI tool to spin up

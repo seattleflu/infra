@@ -4,7 +4,6 @@
     package:
       - uwsgi
       - uwsgi-plugin-python3
-    update_cache: true
 
 - name: uwsgi is enabled
   service:

@@ -1,2 +1,6 @@
 [backoffice]
 backoffice.multipass
+
+[all:vars]
+production=False
+development=True
