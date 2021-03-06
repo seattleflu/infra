@@ -11,6 +11,7 @@
     - import_tasks: tasks/systemd.yaml
     - import_tasks: tasks/prometheus.yaml
     - import_tasks: tasks/uwsgi.yaml
+    - import_tasks: tasks/switchboard.yaml
 
   handlers:
     - name: prometheus is restarted

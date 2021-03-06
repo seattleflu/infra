@@ -1,0 +1,31 @@
+---
+- name: switchboard data dir owner/group/mode is set
+  file:
+    path: &data_dir /opt/scan-switchboard/data
+    owner: "{{app_user}}"
+    group: "{{app_user}}"
+    mode: ug=rwx,o=rx
+    state: directory
+
+- name: switchboard data dir ACLs are set
+  loop:
+    - "{{app_user}}"
+    - nobody
+  ansible.posix.acl:
+    path: *data_dir
+    etype: user
+    entity: "{{item}}"
+    permissions: rwx
+    state: present
+
+- name: switchboard data dir default ACLs are set
+  loop:
+    - "{{app_user}}"
+    - nobody
+  ansible.posix.acl:
+    path: *data_dir
+    default: true
+    etype: user
+    entity: "{{item}}"
+    permissions: rwX
+    state: present
