@@ -12,6 +12,7 @@
     - import_tasks: tasks/prometheus.yaml
     - import_tasks: tasks/uwsgi.yaml
     - import_tasks: tasks/switchboard.yaml
+    - import_tasks: tasks/promtail.yaml
 
   handlers:
     - name: prometheus is restarted
@@ -37,3 +38,8 @@
       service:
         name: uwsgi
         state: reloaded
+
+    - name: promtail is restarted
+      service:
+        name: promtail
+        state: restarted

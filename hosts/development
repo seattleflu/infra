@@ -4,3 +4,4 @@ backoffice.multipass
 [all:vars]
 production=False
 development=True
+ansible_python_interpreter=/usr/bin/python3

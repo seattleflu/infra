@@ -1,0 +1,43 @@
+---
+
+- name: unzip is installed
+  apt:
+    package:
+      - unzip
+
+- name: grafana api key is downloaded
+  template:
+    src: files/etc/prometheus/grafana-cloud-api-key
+    dest: /etc/prometheus/grafana-cloud-api-key
+
+- name: promtail directory exists
+  file:
+    path: /etc/promtail
+    state: directory
+
+- name: promtail is downloaded
+  get_url:
+    url: https://github.com/grafana/loki/releases/download/v2.1.0/promtail-linux-amd64.zip
+    dest: /usr/local/bin/promtail-linux-amd64.zip
+    owner: root
+    group: root
+    mode: u=rwX,go=rX
+
+- name: promtail is extracted
+  unarchive:
+    remote_src: yes
+    src: /usr/local/bin/promtail-linux-amd64.zip
+    dest: /usr/local/bin
+
+- name: promtail is installed
+  file:
+    state: link
+    path: /usr/local/bin/promtail
+    src: promtail-linux-amd64
+
+- name: promtail settings are configured
+  template:
+    src: files/etc/promtail/promtail.yml
+    dest: /etc/promtail/promtail.yml
+  notify:
+    - promtail is restarted
