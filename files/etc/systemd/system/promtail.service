@@ -7,6 +7,7 @@ Type=simple
 User=root
 ExecStart=/usr/local/bin/promtail -config.file /etc/promtail/promtail.yml -positions.file %S/promtail/positions.yaml
 StateDirectory=promtail
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
