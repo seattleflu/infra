@@ -1,7 +1,6 @@
 server:
   http_listen_port: 9080
 
-{% if production %}
 clients:
   - url: https://logs-prod-us-central1.grafana.net/api/prom/push
     basic_auth:
@@ -9,7 +8,7 @@ clients:
       password_file: /etc/promtail/grafana-cloud-api-key
     external_labels:
       instance: backoffice
-{% endif %}
+      environment: {{ "production" if production else "development" }}
 
 scrape_configs:
   - job_name: /var/log
