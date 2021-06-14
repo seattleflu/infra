@@ -17,6 +17,8 @@ cat >/var/lib/prometheus/uwsgi-exporter/"$app".yaml <<END
 ---
 - targets:
     - "localhost:$port"
+  labels:
+    app: "$app"
 END
 
 # No need to check or catch if $port is in use, because systemd will restart us
