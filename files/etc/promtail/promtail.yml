@@ -1,9 +1,6 @@
 server:
   http_listen_port: 9080
 
-positions:
-  filename: /tmp/positions.yaml
-
 {% if production %}
 clients:
   - url: https://logs-prod-us-central1.grafana.net/api/prom/push
