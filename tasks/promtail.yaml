@@ -5,11 +5,6 @@
     package:
       - unzip
 
-- name: promtail directory exists
-  file:
-    path: /etc/promtail
-    state: directory
-
 - name: promtail is downloaded
   unarchive:
     remote_src: yes
@@ -26,7 +21,12 @@
     path: /usr/local/bin/promtail
     src: promtail-linux-amd64
 
-- name: promtail settings are configured
+- name: promtail config directory exists
+  file:
+    path: /etc/promtail
+    state: directory
+
+- name: promtail config is installed
   template:
     src: files/etc/promtail/promtail.yml
     dest: /etc/promtail/promtail.yml
