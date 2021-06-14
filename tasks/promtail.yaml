@@ -11,18 +11,14 @@
     state: directory
 
 - name: promtail is downloaded
-  get_url:
-    url: https://github.com/grafana/loki/releases/download/v2.1.0/promtail-linux-amd64.zip
-    dest: /usr/local/bin/promtail-linux-amd64.zip
+  unarchive:
+    remote_src: yes
+    src: https://github.com/grafana/loki/releases/download/v2.1.0/promtail-linux-amd64.zip
+    dest: /usr/local/bin
     owner: root
     group: root
     mode: u=rwX,go=rX
-
-- name: promtail is extracted
-  unarchive:
-    remote_src: yes
-    src: /usr/local/bin/promtail-linux-amd64.zip
-    dest: /usr/local/bin
+    creates: /usr/local/bin/promtail-linux-amd64
 
 - name: promtail is installed
   file:
