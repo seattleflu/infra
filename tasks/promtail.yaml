@@ -13,7 +13,7 @@
 - name: promtail is downloaded
   unarchive:
     remote_src: yes
-    src: https://github.com/grafana/loki/releases/download/v2.1.0/promtail-linux-amd64.zip
+    src: https://github.com/grafana/loki/releases/download/v2.2.1/promtail-linux-amd64.zip
     dest: /usr/local/bin
     owner: root
     group: root
