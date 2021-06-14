@@ -7,15 +7,58 @@ clients:
     basic_auth:
       username: 18857
       password_file: /etc/promtail/grafana-cloud-api-key
+    external_labels:
+      instance: backoffice
 {% endif %}
 
 scrape_configs:
-  #System logs
-- job_name: system
-  static_configs:
-  - targets:
-      - localhost
-    labels:
-      job: varlogs
-      host: {{ inventory_hostname }}
-      __path__: /var/log/*log
+  - job_name: /var/log
+    static_configs:
+      - labels:
+          __path__: /var/log/alternatives.log
+          job: alternatives
+      - labels:
+          __path__: /var/log/apache2/*.log
+          job: apache
+      - labels:
+          __path__: /var/log/apt/history.log
+          job: apt
+      - labels:
+          __path__: /var/log/cloud-init-output.log
+          job: cloud-init
+      - labels:
+          __path__: /var/log/dpkg.log
+          job: dpkg
+      - labels:
+          __path__: /var/log/shibboleth/*.log
+          job: shibboleth
+      - labels:
+          __path__: /var/log/unattended-upgrades/*.log
+          job: unattended-upgrades
+      - labels:
+          __path__: /var/log/uwsgi/app/api-production.log
+          job: uwsgi
+          app: api-production
+      - labels:
+          __path__: /var/log/uwsgi/app/api-testing.log
+          job: uwsgi
+          app: api-testing
+      - labels:
+          __path__: /var/log/uwsgi/app/husky-musher.log
+          job: uwsgi
+          app: husky-musher
+
+  - job_name: journal
+    journal:
+      labels:
+        job: systemd-journal
+    relabel_configs:
+      - source_labels:
+          - __journal__systemd_unit
+        target_label: unit
+      - source_labels:
+          - __journal__comm
+        target_label: command
+      - source_labels:
+          - __journal_priority_keyword
+        target_label: priority
