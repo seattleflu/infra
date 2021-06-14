@@ -10,7 +10,7 @@ clients:
   - url: https://logs-prod-us-central1.grafana.net/api/prom/push
     basic_auth:
       username: 18857
-      password_file: /etc/prometheus/grafana-cloud-api-key
+      password_file: /etc/promtail/grafana-cloud-api-key
 {% endif %}
 
 scrape_configs:

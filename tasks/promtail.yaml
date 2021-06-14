@@ -5,11 +5,6 @@
     package:
       - unzip
 
-- name: grafana api key is downloaded
-  template:
-    src: files/etc/prometheus/grafana-cloud-api-key
-    dest: /etc/prometheus/grafana-cloud-api-key
-
 - name: promtail directory exists
   file:
     path: /etc/promtail
@@ -41,3 +36,11 @@
     dest: /etc/promtail/promtail.yml
   notify:
     - promtail is restarted
+
+- name: grafana api key is installed
+  copy:
+    src: files/etc/promtail/grafana-cloud-api-key
+    dest: /etc/promtail/grafana-cloud-api-key
+    owner: root
+    group: root
+    mode: ug=r,o=
