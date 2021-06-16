@@ -5,41 +5,23 @@
       - uwsgi
       - uwsgi-plugin-python3
 
-- name: uwsgi is enabled
-  service:
-    name: uwsgi
-    enabled: yes
-    state: started
 
 - name: uwsgi base config exists
   copy:
-    remote_src: true
-    src: /usr/share/uwsgi/conf/default.ini
+    src: files/etc/uwsgi/base.ini
     dest: /etc/uwsgi/base.ini
-    force: no
-    backup: yes
+    owner: root
+    group: root
+    mode: ugo=r
 
-- name: uwsgi base config enables stats
-  community.general.ini_file:
-    path: /etc/uwsgi/base.ini
-    section: uwsgi
-    option: stats
-    # See the comments in /etc/uwsgi/base.ini (as copied from the original
-    # source above) for where these %(…) substitutions come from.
-    value: /run/uwsgi/%(deb-confnamespace)/%(deb-confname)/stats
-    backup: yes
-  notify:
-    - uwsgi is reloaded
-
-- name: uwsgi default invocation is configured
-  lineinfile:
-    path: /etc/default/uwsgi
-    regexp: '^INHERITED_CONFIG='
-    line: 'INHERITED_CONFIG=/etc/uwsgi/base.ini'
-  notify:
-    # Restart not reload since the actual options used to invoke uWSGI changed,
-    # not just the contents of its config files.
-    - uwsgi is restarted
+- name: uwsgi app configs exists
+  loop: "{{ uwsgi_apps }}"
+  copy:
+    src: "files/etc/uwsgi/apps-available/{{ item }}.ini"
+    dest: /etc/uwsgi/apps-available/
+    owner: root
+    group: root
+    mode: ugo=r
 
 - name: uwsgi app logs readable by adm group
   file:

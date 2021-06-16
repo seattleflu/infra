@@ -5,6 +5,10 @@
   become: true
   vars:
     app_user: ubuntu
+    uwsgi_apps:
+      - api-production
+      - api-testing
+      - husky-musher
 
   tasks:
     - import_tasks: tasks/apt-update.yaml
@@ -27,16 +31,6 @@
     - name: prometheus is reloaded
       service:
         name: prometheus
-        state: reloaded
-
-    - name: uwsgi is restarted
-      service:
-        name: uwsgi
-        state: restarted
-
-    - name: uwsgi is reloaded
-      service:
-        name: uwsgi
         state: reloaded
 
     - name: promtail is restarted
