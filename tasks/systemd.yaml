@@ -7,4 +7,4 @@
     group: root
     mode: u=rw,go=r
   notify:
-    - systemd is reloaded
+    - systemd units are re-read from disk

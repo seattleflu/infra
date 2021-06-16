@@ -15,6 +15,10 @@
     - import_tasks: tasks/promtail.yaml
 
   handlers:
+    - name: systemd units are re-read from disk
+      systemd:
+        daemon_reload: yes
+
     - name: prometheus is restarted
       service:
         name: prometheus
@@ -24,10 +28,6 @@
       service:
         name: prometheus
         state: reloaded
-
-    - name: systemd is reloaded
-      systemd:
-        daemon_reload: yes
 
     - name: uwsgi is restarted
       service:
