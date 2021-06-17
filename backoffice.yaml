@@ -12,6 +12,8 @@
 
   tasks:
     - import_tasks: tasks/apt-update.yaml
+    - import_tasks: tasks/python.yaml
+    - import_tasks: tasks/source.yaml
     - import_tasks: tasks/systemd.yaml
     - import_tasks: tasks/prometheus.yaml
     - import_tasks: tasks/uwsgi.yaml
@@ -31,6 +33,18 @@
     - name: prometheus is reloaded
       service:
         name: prometheus
+        state: reloaded
+
+    - name: uwsgi apps are restarted
+      loop: "{{ uwsgi_apps }}"
+      service:
+        name: "uwsgi@{{ item }}"
+        state: restarted
+
+    - name: uwsgi apps are reloaded
+      loop: "{{ uwsgi_apps }}"
+      service:
+        name: "uwsgi@{{ item }}"
         state: reloaded
 
     - name: promtail is restarted

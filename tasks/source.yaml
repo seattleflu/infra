@@ -1,0 +1,25 @@
+---
+- name: "/opt/backoffice is owned by {{app_user}}"
+  file:
+    path: /opt/backoffice
+    state: directory
+    owner: "{{app_user}}"
+    group: "{{app_user}}"
+
+- name: /opt/backoffice is up-to-date
+  git:
+    repo: https://github.com/seattleflu/backoffice
+    dest: /opt/backoffice
+  become: no
+
+- name: os deps are installed
+  apt:
+    package:
+      - libpq-dev
+      - postgresql-client-10
+
+- name: id3c-production deps are installed
+  shell:
+    chdir: /opt/backoffice/id3c-production
+    cmd: PIPENV_VENV_IN_PROJECT=1 pipenv sync
+  become: no
