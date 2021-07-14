@@ -1,0 +1,69 @@
+---
+- name: promtail group exists
+  group:
+    name: promtail
+    system: yes
+
+- name: promtail user exists
+  user:
+    name: promtail
+    group: promtail
+    groups:
+      # adm is a standard Debian/Ubuntu group used for system monitoring tasks.
+      # Most log files are already readable by adm.
+      - adm
+
+      # systemd-journal is a standard Debian/Ubuntu group used for access to
+      # /var/log/journal and journalctl(1).
+      - systemd-journal
+    system: yes
+    home: /var/lib/promtail
+    create_home: no
+    shell: /usr/sbin/nologin
+
+- name: unzip is installed
+  apt:
+    package:
+      - unzip
+
+- name: promtail is downloaded
+  unarchive:
+    remote_src: yes
+    src: https://github.com/grafana/loki/releases/download/v2.2.1/promtail-linux-amd64.zip
+    dest: /usr/local/bin
+    owner: root
+    group: root
+    mode: u=rwX,go=rX
+    creates: /usr/local/bin/promtail-linux-amd64
+
+- name: promtail is installed
+  file:
+    state: link
+    path: /usr/local/bin/promtail
+    src: promtail-linux-amd64
+
+- name: promtail config directory exists
+  file:
+    path: /etc/promtail
+    state: directory
+
+- name: promtail config is installed
+  template:
+    src: files/etc/promtail/promtail.yml
+    dest: /etc/promtail/promtail.yml
+  notify:
+    - promtail is restarted
+
+- name: grafana api key is installed
+  copy:
+    src: files/etc/promtail/grafana-cloud-api-key
+    dest: /etc/promtail/grafana-cloud-api-key
+    owner: promtail
+    group: promtail
+    mode: ug=r,o=
+
+- name: promtail is enabled
+  service:
+    name: promtail
+    enabled: yes
+    state: started

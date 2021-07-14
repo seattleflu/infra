@@ -12,6 +12,13 @@ scrape_configs:
         labels:
           instance: backoffice
 
+  # Metrics about promtail's operation
+  - job_name: promtail
+    static_configs:
+      - targets: ['localhost:9080']
+        labels:
+          instance: backoffice
+
   # Metrics about the host, from node-exporter
   - job_name: host
     static_configs:
