@@ -1,7 +1,7 @@
 [Unit]
 Description=Prometheus uWSGI exporter for %i
-After=uwsgi.service
-BindsTo=uwsgi.service
+After=uwsgi@%i.service
+BindsTo=uwsgi@%i.service
 
 [Service]
 User=prometheus
