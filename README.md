@@ -128,10 +128,24 @@ inventory (*hosts/development*).  You should see green text saying something lik
 
     backoffice.multipass | SUCCESS => {
         "ping": "pong",
+
+    }
+
+If Ansible cannot login and you recieve a message like:
+
+    backoffice.multipass | UNREACHABLE! => {
+        "msg": "Failed to connect to the host via ssh: ssh: Could not resolve hostname backoffice.multipass: nodename nor servname provided, or not known",
         …
     }
 
-For troubleshooting, you can get a shell on your new instance at any point
+Then you should try running
+
+    multipass info backoffice
+
+and use the IPv4 address printed out in lieu of the hostname provided in *hosts/development*
+
+
+For other troubleshooting, you can get a shell on your new instance at any point
 with:
 
     multipass shell backoffice
