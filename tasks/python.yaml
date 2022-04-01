@@ -1,0 +1,42 @@
+---
+- name: Install Python build dependencies
+  apt 
+    package:
+      - libbz2-dev
+      - libffi-dev
+      - libfontconfig1-dev
+      - libfreetype6-dev
+      - libgdbm-compat-dev
+      - libgdbm-dev
+      - libice-dev
+      - liblzma-dev
+      - libncurses5-dev
+      - libpng-dev
+      - libpthread-stubs0-dev
+      - libreadline-dev
+      - libsm-dev
+      - libsqlite0-dev
+      - libsqlite3-dev
+      - libssl-dev
+      - libtinfo-dev
+      - libx11-dev
+      - libxau-dev
+      - libxcb1-dev
+      - libxdmcp-dev
+      - libxext-dev
+      - libxft-dev
+      - libxrender-dev
+      - libxss-dev
+      - libxt-dev
+      - lzma-dev
+      - tcl-dev
+      - tcl8.6-dev
+      - tk-dev
+      - tk8.6-dev
+      - uuid-dev
+      - x11proto-core-dev
+      - x11proto-dev
+      - x11proto-scrnsaver-dev
+      - x11proto-xext-dev
+      - xtrans-dev
+      - zlib1g-dev
