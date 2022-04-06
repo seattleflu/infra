@@ -1,16 +1,18 @@
 ---
+- name: check if Postgres PGDG key is already installed
+  stat:
+    path: /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg
+  register: pgdg_key_path
+
 - name: download upstream Postgres GPG keys
+  when: not pgdg_key_path.stat.exists
   get_url:
     url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
     dest: /tmp
     checksum: sha1:403374e8f22266f67fe14b79b8257491dce75af7
 
-- name: remove any existing PGDG GPG keys
-  file:
-    path: /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg
-    state: absent
-
 - name: install upstream Postgres GPG keys
+  when: not pgdg_key_path.stat.exists
   command:
     cmd: /usr/bin/gpg -o /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg --dearmor /tmp/ACCC4CF8.asc
 
@@ -26,6 +28,12 @@
     update_cache: yes
     pkg:
       - postgresql-client-{{postgres_version}}
+
+- name: install Postgres development headers for psycopg2
+  apt:
+    update_cache: yes
+    pkg:
+      - libpq-dev
 
 - name: install Postgres server
   when: install_postgres_server
