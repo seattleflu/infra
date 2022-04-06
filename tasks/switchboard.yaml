@@ -1,4 +1,9 @@
 ---
+- name: ensure acl tools are installed
+  apt:
+    package:
+      - acl
+
 - name: switchboard data dir owner/group/mode is set
   file:
     path: &data_dir /opt/sfs-switchboard/data
