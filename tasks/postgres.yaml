@@ -1,0 +1,38 @@
+---
+- name: download upstream Postgres GPG keys
+  get_url:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    dest: /tmp
+    checksum: sha1:403374e8f22266f67fe14b79b8257491dce75af7
+
+- name: remove any existing PGDG GPG keys
+  file:
+    path: /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg
+    state: absent
+
+- name: install upstream Postgres GPG keys
+  command:
+    cmd: /usr/bin/gpg -o /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg --dearmor /tmp/ACCC4CF8.asc
+
+- name: ensure apt sources list contains PGDG repo
+  lineinfile:
+    path: /etc/apt/sources.list.d/pgdg.list
+    create: yes
+    mode: 0644
+    line: deb http://apt.postgresql.org/pub/repos/apt {{ansible_lsb.codename}}-pgdg main
+
+- name: install Postgres client
+  apt:
+    update_cache: yes
+    pkg:
+      - postgresql-client-{{postgres_version}}
+
+- name: install Postgres server
+  when: install_postgres_server
+  apt:
+    update_cache: yes
+    pkg:
+      - postgresql-server-{{postgres_version}}
+      - postgresql-server-dev-{{postgres_version}}
+      - postgresql-{{postgres_version}}-postgis-{{postgis_version}}
+

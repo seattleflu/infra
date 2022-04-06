@@ -4,3 +4,8 @@ backoffice.multipass
 [all:vars]
 production=False
 development=True
+postgres_version=13
+postgis_version=3
+
+[backoffice:vars]
+install_postgres_server=False
