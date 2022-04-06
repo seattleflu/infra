@@ -1,0 +1,16 @@
+---
+- name: ensure production SSH keys are installed
+  when: production
+  copy:
+    src: /foo/bar
+    dest: /baz/xyzzy
+    remote_src: yes
+
+- name: ensure development SSH keys are installed
+  when: development
+  copy:
+    src: /vagrant/.ssh
+    dest: /root
+    remote_src: yes
+    directory_mode: 0700
+    mode: 0600

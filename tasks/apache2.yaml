@@ -1,0 +1,36 @@
+---
+- name: ensure Apache httpd is installed
+  apt:
+    update_cache: yes
+    package:
+      - apache2
+      - libapache2-mod-proxy-uwsgi
+      - libapache2-mod-shib2
+      - libapache2-mod-wsgi-py3
+    install_recommends: yes
+
+- name: checkout backoffice-apache2 repository
+  git:
+    repo: 'git@github.com:/seattleflu/backoffice-apache2.git'
+    dest: /etc/backoffice-apache2
+    accept_hostkey: yes    
+    force: yes
+
+- name: check whether mod_shib v2 is installed
+  stat:
+    path: /usr/lib/apache2/modules/mod_shib2.so
+  register: mod_shib_v2
+
+- name: fix symlink for mod_shib v2 if installed
+  when: mod_shib_v2.stat.exists
+  file:
+    src: ../mods-available/shib2.load
+    dest: /etc/backoffice-apache2/mods-enabled/shib.load
+    state: link
+
+- name: copy apache config from git repo
+  # Note the trailing / which copies only the contents of the directory
+  copy:
+    src: /etc/backoffice-apache2/
+    dest: /etc/apache2
+    remote_src: yes
