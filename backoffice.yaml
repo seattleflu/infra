@@ -25,6 +25,7 @@
     - import_tasks: tasks/python.yaml
     - import_tasks: tasks/uwsgi.yaml
     - import_tasks: tasks/apache2.yaml
+    - import_tasks: tasks/certbot.yaml
 
   handlers:
     - name: systemd units are re-read from disk
