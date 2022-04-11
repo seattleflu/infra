@@ -12,5 +12,11 @@
     src: /vagrant/.ssh
     dest: /root
     remote_src: yes
-    directory_mode: 0700
-    mode: 0600
+
+- name: enforce permissions on SSH directory
+  file:
+    path: /root/.ssh
+    state: directory
+    mode: go-rwx
+    recurse: yes
+
