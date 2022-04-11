@@ -1,2 +1,7 @@
 ---
+# This is a placeholder for the production process
+# We obviously don't want to screw up current prod with a new cert
 - name: set up certbot repository
+  apt:
+    package:
+      - apache2-bin

@@ -1,0 +1,13 @@
+---
+- name: Install certbot via pip on Ubuntu 18
+  when: ansible_lsb.codename == 'bionic'
+  pip:
+    executable: /opt/python/{{python_version}}/bin/pip3
+    name:
+      - certbot
+
+- name: Install certbot via apt on Ubuntu 20/22
+  when: ansible_lsb.codename != 'bionic'
+  apt:
+    package:
+      - certbot
