@@ -12,6 +12,7 @@
 
   tasks:
     - import_tasks: tasks/apt-update.yaml
+    - import_tasks: tasks/apache.yaml
     - import_tasks: tasks/systemd.yaml
     - import_tasks: tasks/prometheus.yaml
     - import_tasks: tasks/uwsgi.yaml
@@ -22,6 +23,16 @@
     - name: systemd units are re-read from disk
       systemd:
         daemon_reload: yes
+
+    - name: apache is restarted
+      service:
+        name: apache2
+        state: restarted
+
+    - name: apache is reloaded
+      service:
+        name: apache2
+        state: reloaded
 
     - name: prometheus is restarted
       service:

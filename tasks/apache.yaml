@@ -1,0 +1,28 @@
+---
+- name: switchaai apt-source package is installed
+  apt:
+    deb: https://pkg.switch.ch/switchaai/ubuntu/dists/bionic/main/binary-all/misc/switchaai-apt-source_1.0.0ubuntu1_all.deb
+  register: switchaai_source_pkg
+
+- name: apt cache is up-to-date after new source installed
+  apt:
+    update_cache: true
+  when: switchaai_source_pkg.changed
+
+- name: apache is installed
+  apt:
+    package:
+      - apache2
+      - libapache2-mod-proxy-uwsgi
+      - libapache2-mod-shib
+      - libapache2-mod-wsgi-py3
+      - python3-certbot-apache
+
+- name: apache is enabled
+  service:
+    name: apache2
+    enabled: yes
+    state: started
+
+# XXX TODO: merge backoffice-apache2.git and backoffice-shibboleth.git into
+# this repo and manage their installation, etc.
