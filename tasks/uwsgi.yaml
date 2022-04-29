@@ -5,6 +5,11 @@
       - uwsgi
       - uwsgi-plugin-python3
 
+- name: default uwsgi multi-app service is disabled
+  service:
+    name: uwsgi
+    enabled: no
+    state: stopped
 
 - name: uwsgi base config exists
   copy:
@@ -13,6 +18,8 @@
     owner: root
     group: root
     mode: ugo=r
+  notify:
+    - uwsgi apps are reloaded
 
 - name: uwsgi app configs exists
   loop: "{{ uwsgi_apps }}"
@@ -22,6 +29,8 @@
     owner: root
     group: root
     mode: ugo=r
+  notify:
+    - uwsgi apps are reloaded
 
 - name: uwsgi app logs readable by adm group
   file:
@@ -39,3 +48,24 @@
     owner: root
     group: adm
     mode: u=rwx,go=rxs
+
+- name: uwsgi apps are enabled
+  loop: "{{uwsgi_apps}}"
+  service:
+    name: "uwsgi@{{item}}"
+    enabled: yes
+    state: started
+
+- name: uwsgi apps are enabled
+  loop: "{{uwsgi_apps}}"
+  service:
+    name: "uwsgi@{{item}}"
+    enabled: yes
+    state: started
+
+- name: uwsgi prometheus exporters are enabled
+  loop: "{{uwsgi_apps}}"
+  service:
+    name: "prometheus-uwsgi-exporter@{{item}}"
+    enabled: yes
+    state: started
