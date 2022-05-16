@@ -120,4 +120,7 @@
     regexp: '^PIPENV_VENV_IN_PROJECT=1$'
     line: 'PIPENV_VENV_IN_PROJECT=1'
 
-
+- name: Register custom Python path
+  stat:
+    path: /opt/python/current/bin
+  register: custom_python_path

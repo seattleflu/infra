@@ -1,20 +1,15 @@
 ---
-- name: check if using /opt/python
-  stat:
-    path: /opt/python
-  register: python_path
-
 - name: uwsgi is installed in system Python
-  when: not python_path.stat.exists
+  when: not custom_python_path.stat.exists
   apt:
     package:
       - uwsgi
       - uwsgi-plugin-python3
 
 - name: uwsgi is installed in /opt/python
-  when: python_path.stat.exists
+  when: custom_python_path.stat.exists
   pip:
-    executable: /opt/python/current/bin/pip3
+    executable: "{{custom_python_path.stat.path}}/pip3"
     name:
       - uwsgi
 

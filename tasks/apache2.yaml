@@ -5,16 +5,9 @@
     package:
       - apache2
       - libapache2-mod-proxy-uwsgi
-      - libapache2-mod-shib2
+      - libapache2-mod-shib
       - libapache2-mod-wsgi-py3
     install_recommends: yes
-
-- name: checkout backoffice-apache2 repository
-  git:
-    repo: 'git@github.com:/seattleflu/backoffice-apache2.git'
-    dest: /etc/backoffice-apache2
-    accept_hostkey: yes    
-    force: yes
 
 - name: check whether mod_shib v2 is installed
   stat:

@@ -1,0 +1,15 @@
+---
+- name: create id3c-production pipenv
+  command:
+    chdir: /opt/backoffice/id3c-production
+    cmd: "{{custom_python_path.stat.path}}/pipenv --python {{custom_python_path.stat.path}}/python3 sync"
+
+- name: create id3c-testing pipenv
+  command:
+    chdir: /opt/backoffice/id3c-testing
+    cmd: "{{custom_python_path.stat.path}}/pipenv --python {{custom_python_path.stat.path}}/python3 sync"
+
+- name: create wa-doh-linelists pipenv
+  command:
+    chdir: /opt/backoffice/wa-doh-linelists
+    cmd: "{{custom_python_path.stat.path}}/pipenv --python {{custom_python_path.stat.path}}/python3 sync"
