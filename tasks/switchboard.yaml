@@ -1,9 +1,4 @@
 ---
-- name: ensure acl tools are installed
-  apt:
-    package:
-      - acl
-
 - name: switchboard data dir owner/group/mode is set
   file:
     path: &data_dir /opt/sfs-switchboard/data
@@ -38,7 +33,9 @@
 - name: install switchboard virtualenv
   become: yes
   become_user: "{{app_user}}"
-  command:
+  environment:
+    PATH: /opt/python/current/bin:{{ansible_env.PATH}}
+  shell:
     chdir: /opt/sfs-switchboard
     cmd: make venv
    
