@@ -1,22 +1,31 @@
 ---
-- name: ensure production SSH keys are installed
-  when: production
-  copy:
-    src: /foo/bar
-    dest: /baz/xyzzy
-    remote_src: yes
-
-- name: ensure development SSH keys are installed
+- name: ensure development SSH keys are installed to root user's home
   when: development
   copy:
     src: /vagrant/.ssh
     dest: /root
     remote_src: yes
 
-- name: enforce permissions on SSH directory
+- name: ensure development SSH keys are installed to {{app_user}} user's home
+  when: development
+  copy:
+    src: /vagrant/.ssh
+    dest: /home/{{app_user}}
+    remote_src: yes
+
+- name: enforce permissions on root's SSH directory
   file:
     path: /root/.ssh
     state: directory
+    mode: go-rwx
+    recurse: yes
+
+- name: enforce permissions on {{app_user}}'s SSH directory
+  file:
+    path: /home/{{app_user}}/.ssh
+    state: directory
+    owner: '{{app_user}}'
+    group: '{{app_user}}'
     mode: go-rwx
     recurse: yes
 
