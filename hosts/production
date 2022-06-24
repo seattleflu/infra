@@ -9,3 +9,4 @@ postgis_version=3
 
 [backoffice:vars]
 install_postgres_server=False
+python_version=3.9.13

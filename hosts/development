@@ -1,5 +1,8 @@
 [backoffice]
-backoffice.multipass
+backoffice-dev
+
+[db_servers]
+pgserver
 
 [all:vars]
 production=False
@@ -9,3 +12,7 @@ postgis_version=3
 
 [backoffice:vars]
 install_postgres_server=False
+python_version=3.9.13
+
+[db_servers:vars]
+install_postgres_server=True
