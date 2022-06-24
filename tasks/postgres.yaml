@@ -64,6 +64,7 @@
     mode: 0644
 
 - name: restart Postgres systemd service
+  when: install_postgres_server
   command:
     cmd: systemctl restart postgresql@{{postgres_version}}-main
 
@@ -78,5 +79,6 @@
     cmd: su - postgres -c "psql -c \"alter role postgres with encrypted password '{{superuser_password}}'\""
 
 - name: Postgres superuser password set to
+  when: install_postgres_server
   debug:
     msg: "{{superuser_password}}"
