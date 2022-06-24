@@ -5,20 +5,38 @@
     package:
       - apache2
       - libapache2-mod-proxy-uwsgi
-      - libapache2-mod-shib
       - libapache2-mod-wsgi-py3
     install_recommends: yes
 
+- name: install mod_shib on Ubuntu Bionic
+  when: ansible_lsb.codename == 'bionic'
+  apt:
+    update_cache: yes
+    package:
+      - libapache2-mod-shib2
+      - libshibsp-plugins
+      - shibboleth-sp2-utils
+      - libshibsp7
+      - libxmltooling7
+      - libcurl3
+
+- name: install mod_shib on Ubuntu 20/22
+  when: not ansible_lsb.codename == 'bionic'
+  apt:
+    update_cache: yes
+    package:
+      - libapache2-mod-shib
+
 - name: check whether mod_shib v2 is installed
   stat:
-    path: /usr/lib/apache2/modules/mod_shib2.so
+    path: /etc/apache2/mods-available/shib2.load
   register: mod_shib_v2
 
 - name: fix symlink for mod_shib v2 if installed
   when: mod_shib_v2.stat.exists
   file:
     src: ../mods-available/shib2.load
-    dest: /etc/backoffice-apache2/mods-enabled/shib.load
+    dest: /etc/apache2/mods-available/shib.load
     state: link
 
 - name: copy apache config from git repo
