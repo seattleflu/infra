@@ -3,3 +3,8 @@
   apt:
     update_cache: true
     cache_valid_time: 86400 # 24 hours in seconds
+
+- name: install packages required for ansible functionality
+  apt:
+    package:
+      - acl
