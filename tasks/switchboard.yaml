@@ -29,3 +29,13 @@
     entity: "{{item}}"
     permissions: rwX
     state: present
+
+- name: install switchboard virtualenv
+  become: yes
+  become_user: "{{app_user}}"
+  environment:
+    PATH: /opt/python/current/bin:{{ansible_env.PATH}}
+  shell:
+    chdir: /opt/sfs-switchboard
+    cmd: make venv
+   

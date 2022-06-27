@@ -12,11 +12,22 @@
 
   tasks:
     - import_tasks: tasks/apt-update.yaml
+    - import_tasks: tasks/ssh-keys.yaml
     - import_tasks: tasks/systemd.yaml
     - import_tasks: tasks/prometheus.yaml
-    - import_tasks: tasks/uwsgi.yaml
-    - import_tasks: tasks/switchboard.yaml
     - import_tasks: tasks/promtail.yaml
+    - import_tasks: tasks/postgres.yaml
+    - import_tasks: tasks/python.yaml
+    - import_tasks: tasks/uwsgi.yaml
+    - import_tasks: tasks/backoffice-repos.yaml
+    - import_tasks: tasks/apache2.yaml
+    - import_tasks: tasks/certbot.yaml
+    - import_tasks: tasks/dev-ssl-cert.yaml
+      when: development
+    - import_tasks: tasks/prod-ssl-cert.yaml
+      when: production
+    - import_tasks: tasks/backoffice-pipenv.yaml
+    - import_tasks: tasks/switchboard.yaml
 
   handlers:
     - name: systemd units are re-read from disk

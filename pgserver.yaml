@@ -1,0 +1,17 @@
+---
+- name: pgserver
+  hosts: pgserver
+  remote_user: ubuntu
+  become: true
+  vars:
+    app_user: ubuntu
+
+  tasks:
+    - import_tasks: tasks/apt-update.yaml
+    - import_tasks: tasks/ssh-keys.yaml
+    - import_tasks: tasks/postgres.yaml
+
+  handlers:
+    - name: systemd units are re-read from disk
+      systemd:
+        daemon_reload: yes

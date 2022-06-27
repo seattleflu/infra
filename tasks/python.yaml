@@ -1,0 +1,188 @@
+---
+- name: Check if Python {{python_version}} is already installed
+  stat:
+    path: /opt/python/{{python_version}}
+  register: python_path
+
+- name: Try to use a Python {{python_version}} binary tarball
+  block:
+
+  - name: Do some initial configuration
+    set_fact:
+      python_bintar_ok: False
+
+  - name: Check for a Python binary tarball
+    when: development
+    stat:
+      path: /vagrant/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz
+      checksum_algorithm: sha256
+    register: python_bintar_available
+
+  - name: Get Python binary checksum
+    when: development and python_bintar_available.stat.exists
+    shell:
+      cmd: sha256sum -c /vagrant/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz.sha256sum
+    register: python_bintar_checksum
+
+  - name: Verify Python binary checksum is ok
+    when: python_bintar_checksum.rc is defined and python_bintar_checksum.rc == 0
+    set_fact:
+      python_bintar_ok: True
+
+  - name: Create Python installation directory
+    file:
+      path: /opt/python
+      state: directory
+
+  - name: Install Python from binary tarball
+    when: development and python_bintar_ok
+    unarchive:
+      remote_src: yes
+      src: /vagrant/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz
+      dest: /opt/python
+
+  rescue:
+  - name: Python binary installation failed, building from source
+    set_fact: 
+      python_bintar_ok: False
+
+
+- name: Install Python build dependencies
+  apt:
+    package:
+      - build-essential
+      - libbz2-dev
+      - libffi-dev
+      - libfontconfig1-dev
+      - libfreetype6-dev
+      - libgdbm-compat-dev
+      - libgdbm-dev
+      - libice-dev
+      - liblzma-dev
+      - libncurses5-dev
+      - libpng-dev
+      - libpthread-stubs0-dev
+      - libreadline-dev
+      - libsm-dev
+      - libsqlite0-dev
+      - libsqlite3-dev
+      - libssl-dev
+      - libtinfo-dev
+      - libx11-dev
+      - libxau-dev
+      - libxcb1-dev
+      - libxdmcp-dev
+      - libxext-dev
+      - libxft-dev
+      - libxrender-dev
+      - libxss-dev
+      - libxt-dev
+      - lzma-dev
+      - tcl-dev
+      - tcl8.6-dev
+      - tk-dev
+      - tk8.6-dev
+      - uuid-dev
+      - x11proto-core-dev
+      - x11proto-dev
+      - x11proto-scrnsaver-dev
+      - x11proto-xext-dev
+      - xtrans-dev
+      - zlib1g-dev
+
+- name: Install additional dependencies for Ubuntu Bionic
+  when: ansible_lsb.codename == 'bionic'
+  apt:
+    update-cache: yes
+    package:
+      - gcc-8
+      - cpp-8
+      - g++-8
+
+- name: Check if Python is already installed
+  stat:
+    path: /opt/python/{{python_version}}
+  register: python_path
+
+- name: Download Python source tarball
+  when: not python_path.stat.exists and not python_bintar_ok
+  get_url:
+    url: https://www.python.org/ftp/python/{{python_version}}/Python-{{python_version}}.tar.xz
+    dest: /tmp
+
+- name: Untar Python source tarball
+  when: not python_path.stat.exists and not python_bintar_ok
+  unarchive:
+    src: /tmp/Python-{{python_version}}.tar.xz
+    dest: /tmp
+    remote_src: yes
+
+- name: Configure Python source
+  when: not ansible_lsb.codename == 'bionic' and not python_path.stat.exists and not python_bintar_ok
+  command: 
+    cmd: ./configure --prefix=/opt/python/{{python_version}} --enable-optimizations
+    chdir: /tmp/Python-{{python_version}}
+
+- name: Configure Python source under Ubuntu 18.04
+  when: ansible_lsb.codename == 'bionic' and not python_path.stat.exists and not python_bintar_ok
+  shell:
+    cmd: CC=/usr/bin/gcc-8 CXX=/usr/bin/g++-8 CPP=/usr/bin/cpp-8 ./configure --prefix=/opt/python/{{python_version}} --enable-optimizations
+    chdir: /tmp/Python-{{python_version}}
+
+- name: Build Python from source (takes a while)
+  when: not python_path.stat.exists and not python_bintar_ok
+  command: 
+    cmd: make -j{{ansible_processor_vcpus}}
+    chdir: /tmp/Python-{{python_version}}
+
+- name: Install Python from source
+  when: not python_path.stat.exists and not python_bintar_ok
+  command:
+    cmd: make install
+    chdir: /tmp/Python-{{python_version}}
+  register: python_source_installed
+
+- name: Create Python binary tarball
+  when: development and not python_source_installed.skipped is defined
+  archive:
+    path: /opt/python/{{python_version}}
+    dest: /vagrant/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz
+    format: xz
+
+- name: Store checksum of newly-created Python binary tarball
+  when: development and not python_source_installed.skipped is defined
+  shell:
+    cmd: sha256sum /vagrant/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz > /vagrant/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz.sha256sum
+
+- name: Install Python packages
+  pip:
+    executable: /opt/python/{{python_version}}/bin/pip3
+    name:
+      - setuptools
+      - wheel
+      - pipenv
+
+- name: Set up Python symlink
+  file:
+    src: /opt/python/{{python_version}}
+    dest: /opt/python/current
+    state: link
+
+- name: Prepend Python to PATH
+  lineinfile:
+    path: /etc/environment
+    backrefs: yes
+    regexp: ^(PATH=")(/usr.*)
+    line: '\g<1>/opt/python/current/bin:\g<2>'
+
+- name: Make sure Pipenv creates venvs in-project
+  lineinfile:
+    path: /etc/environment
+    regexp: '^PIPENV_VENV_IN_PROJECT=1$'
+    line: 'PIPENV_VENV_IN_PROJECT=1'
+
+- name: Register custom Python path
+  stat:
+    path: /opt/python/current/bin
+  register: custom_python_path
+

@@ -1,10 +1,23 @@
 ---
-- name: uwsgi is installed
+- name: uwsgi is installed in system Python
+  when: not custom_python_path.stat.exists
   apt:
     package:
       - uwsgi
       - uwsgi-plugin-python3
 
+- name: uwsgi is installed in /opt/python
+  when: custom_python_path.stat.exists
+  pip:
+    executable: "{{custom_python_path.stat.path}}/pip3"
+    name:
+      - uwsgi
+
+- name: uwsgi config directory exists
+  file:
+    path: /etc/uwsgi
+    state: directory
+    mode: 0755
 
 - name: uwsgi base config exists
   copy:

@@ -55,6 +55,7 @@
     - promtail is restarted
 
 - name: grafana api key is installed
+  when: production
   copy:
     src: files/etc/promtail/grafana-cloud-api-key
     dest: /etc/promtail/grafana-cloud-api-key

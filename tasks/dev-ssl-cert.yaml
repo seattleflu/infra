@@ -1,0 +1,31 @@
+---
+- name: Create the self-signed cert directory
+  file:
+    path: /etc/letsencrypt/live/backoffice.seattleflu.org
+    state: directory
+
+- name: Install Python modules required to create a certificate
+  apt:
+    update_cache: yes
+    package:
+      - python3-openssl
+
+- name: Generate an OpenSSL private key
+  openssl_privatekey:
+    path: "/etc/letsencrypt/live/backoffice.seattleflu.org/privkey.pem"
+
+- name: Generate an OpenSSL Certificate Signing Request with Subject information
+  openssl_csr:
+    path: "/etc/letsencrypt/live/backoffice.seattleflu.org/csr.pem"
+    privatekey_path: "/etc/letsencrypt/live/backoffice.seattleflu.org/privkey.pem"
+    country_name: "US"
+    organization_name: "UW BBI Dev Team"
+    email_address: "developer@example.com"
+    common_name: "backoffice-dev"
+
+- name: Generate a Self Signed OpenSSL certificate
+  openssl_certificate:
+    path: "/etc/letsencrypt/live/backoffice.seattleflu.org/fullchain.pem"
+    privatekey_path: "/etc/letsencrypt/live/backoffice.seattleflu.org/privkey.pem"
+    csr_path: "/etc/letsencrypt/live/backoffice.seattleflu.org/csr.pem"
+    provider: selfsigned
