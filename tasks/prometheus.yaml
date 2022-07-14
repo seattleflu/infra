@@ -53,7 +53,7 @@
     path: /etc/default/prometheus-node-exporter
     regexp: '(?ms)^ARGS=".+?"$'
     replace: |-
-      ARGS="--collector.diskstats.ignored-devices=^(ram|loop|fd|(h|s|v|xv)d[a-z]|nvme\\d+n\\d+p)\\d+$ \
+      ARGS="--collector.diskstats.ignored-devices=(ram|loop|fd|(h|s|v|xv)d[a-z]|nvme\\\\\\\\dn\\\\\\\\d?p?)\\\\\\\\d+ \
             --collector.filesystem.ignored-mount-points=^/(sys|proc|dev|run|var\/lib\/docker\/containers\/.*\/mounts\/shm|var\/lib\/docker\/overlay2\/.*\/merged)($|/) \
             --collector.netdev.ignored-devices=^lo$ \
             --collector.textfile.directory=/var/lib/prometheus/node-exporter \
