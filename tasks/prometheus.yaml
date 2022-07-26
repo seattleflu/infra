@@ -48,6 +48,19 @@
   notify:
     - prometheus is reloaded
 
+- name: prometheus-node-exporter invocation is configured
+  replace:
+    path: /etc/default/prometheus-node-exporter
+    regexp: '(?ms)^ARGS=".+?"$'
+    replace: |-
+      ARGS="--collector.diskstats.ignored-devices=(ram|loop|fd|(h|s|v|xv)d[a-z]|nvme\\\\\\\\dn\\\\\\\\d?p?)\\\\\\\\d+ \
+            --collector.filesystem.ignored-mount-points=^/(sys|proc|dev|run|var\/lib\/docker\/containers\/.*\/mounts\/shm|var\/lib\/docker\/overlay2\/.*\/merged)($|/) \
+            --collector.netdev.ignored-devices=^lo$ \
+            --collector.textfile.directory=/var/lib/prometheus/node-exporter \
+            --collector.systemd"
+  notify:
+    - prometheus-node-exporter is restarted
+
 - name: prometheus-textfile group exists
   group:
     name: prometheus-textfile
@@ -92,4 +105,3 @@
     name: prometheus-apache-exporter
     enabled: yes
     state: started
-
