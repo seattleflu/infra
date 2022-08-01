@@ -43,7 +43,7 @@ scrape_configs:
           job: uwsgi
           app: api-testing
       - labels:
-          __path__: /var/log/uwsgi/app/husky-musher.log
+          __path__: /var/log/husky_musher/husky-musher.log
           job: uwsgi
           app: husky-musher
 
