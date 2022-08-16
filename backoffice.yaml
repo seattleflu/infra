@@ -1,6 +1,6 @@
 ---
 - name: backoffice
-  hosts: backoffice
+  hosts: development, production
   remote_user: ubuntu
   become: true
   vars:

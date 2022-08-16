@@ -1,0 +1,10 @@
+all:
+  hosts:
+    development:
+      ansible_host: backoffice-dev
+    testing:
+      ansible_host: ec2-35-89-95-230.us-west-2.compute.amazonaws.com
+  vars:
+    development: true
+    python_version: 3.9.10
+    postgres_version: 13

@@ -51,7 +51,7 @@ scrape_configs:
       - target_label: instance
         replacement: backoffice
 
-{% if production %}
+{% if not development %}
 remote_write:
   - url: https://prometheus-us-central1.grafana.net/api/prom/push
     basic_auth:

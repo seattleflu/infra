@@ -8,7 +8,7 @@ clients:
       password_file: /etc/promtail/grafana-cloud-api-key
     external_labels:
       instance: backoffice
-      environment: {{ "production" if production else "development" }}
+      environment: {{ "production" if not development else "development" }}
 
 scrape_configs:
   - job_name: /var/log

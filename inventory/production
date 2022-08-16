@@ -1,0 +1,8 @@
+all:
+  hosts:
+    production:
+      ansible_host: backoffice.seattleflu.org
+  vars:
+    development: false
+    python_version: 3.9.10
+    postgres_version: 13

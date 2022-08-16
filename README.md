@@ -30,9 +30,7 @@ The layout of this repository is:
 
     *.yaml          — Playbooks (e.g. backoffice.yaml)
 
-    hosts/          — Inventories of hosts
-      development   —   …in development
-      production    —   …in production
+    inventory       - An inventory of our hosts.
 
     tasks/          — Conceptual groupings of tasks for use by playbooks
       …
@@ -51,13 +49,17 @@ Ansible's documentation.
 
 ## Running playbooks
 
+To test your connection to our hosts:
+
+    ansible all -m ping -u ubuntu -i inventory
+
 To run a playbook in development:
 
-    ansible-playbook a-playbook.yaml
+    ansible-playbook a-playbook.yaml -i inventory/development
 
 To run a playbook in production, change the inventory used:
 
-    ansible-playbook a-playbook.yaml -i hosts/production
+    ansible-playbook a-playbook.yaml -i inventory/production
 
 
 ## Writing playbooks
@@ -121,29 +123,18 @@ Add your SSH public keys so that Ansible can login via SSH:
 
 Now test that Ansible can login by issuing an ad-hoc ping:
 
-    ansible backoffice --user ubuntu --module-name ping
+    ansible development -m ping -i inventory/development -u ubuntu
 
-This specifies the *backoffice* host group, which will be found in the default
-inventory (*hosts/development*).  You should see green text saying something like:
+This specifies the *development* host group, which will be found in the default
+inventory (*inventory*, which is a yaml file).  You should see green text saying something like:
 
-    backoffice.multipass | SUCCESS => {
-        "ping": "pong",
-
+    development | SUCCESS => {
+        "ansible_facts": {
+            "discovered_interpreter_python": "/usr/bin/python3"
+        },
+        "changed": false,
+        "ping": "pong"
     }
-
-If Ansible cannot login and you recieve a message like:
-
-    backoffice.multipass | UNREACHABLE! => {
-        "msg": "Failed to connect to the host via ssh: ssh: Could not resolve hostname backoffice.multipass: nodename nor servname provided, or not known",
-        …
-    }
-
-Then you should try running
-
-    multipass info backoffice
-
-and use the IPv4 address printed out in lieu of the hostname provided in *hosts/development*
-
 
 For other troubleshooting, you can get a shell on your new instance at any point
 with:
