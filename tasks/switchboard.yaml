@@ -1,4 +1,21 @@
 ---
+- name: permissions on switchboard directory are set
+  file:
+    path: /opt/sfs-switchboard
+    state: directory
+    owner: '{{app_user}}'
+    group: '{{app_user}}'
+    recurse: yes
+
+- name: the latest version of the switchboard directory is checked out
+  become: yes
+  become_user: '{{app_user}}'
+  git:
+    repo: 'git@github.com:/seattleflu/switchboard.git'
+    dest: /opt/sfs-switchboard
+    accept_hostkey: yes
+    force: yes
+
 - name: switchboard data dir owner/group/mode is set
   file:
     path: &data_dir /opt/sfs-switchboard/data
@@ -30,6 +47,21 @@
     permissions: rwX
     state: present
 
+- name: sqllite nogroup/noowner file paths were found
+  find:
+    paths: /opt/sfs-switchboard/data
+    file_type: file
+    patterns: "sfs-redcap.sqlite-*"
+  register: filelist
+
+- name: switchboard data dir group and owners are set
+  file:
+    path: '{{ item.path }}'
+    state: file
+    owner: nobody
+    group: nogroup
+  with_items: '{{ filelist.files }}'
+
 - name: install switchboard virtualenv
   become: yes
   become_user: "{{app_user}}"
@@ -38,4 +70,3 @@
   shell:
     chdir: /opt/sfs-switchboard
     cmd: make venv
-   
