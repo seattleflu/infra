@@ -1,0 +1,13 @@
+[Unit]
+Description=SFS Switchboard
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/sfs-switchboard
+User=nobody
+ExecStart=/opt/sfs-switchboard/bin/venv-run ./bin/serve --setting base_url /swit
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target

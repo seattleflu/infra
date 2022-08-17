@@ -6,5 +6,17 @@
     owner: root
     group: root
     mode: u=rw,go=r
-  notify:
-    - systemd units are re-read from disk
+
+- name: metabase unit link is created
+  file:
+    src: /opt/backoffice/metabase/metabase.service
+    dest: /etc/systemd/system/metabase.service
+    state: link
+    force: yes
+
+- name: lab labels unit link is created
+  file:
+    src: /opt/backoffice/lab-labels/lab-labels.service
+    dest: /etc/systemd/system/lab-labels.service
+    state: link
+    force: yes
