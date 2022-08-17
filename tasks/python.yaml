@@ -1,5 +1,5 @@
 ---
-- name: Check if Python {{python_version}} is already installed
+- name: Python {{python_version}} is already installed
   stat:
     path: /opt/python/{{python_version}}
   register: python_path
@@ -7,47 +7,47 @@
 - name: Try to use a Python {{python_version}} binary tarball
   block:
 
-  - name: Do some initial configuration
+  - name: python initial configuration is complete
     set_fact:
       python_bintar_ok: False
 
-  - name: Check for a Python binary tarball
+  - name: a python binary tarball exists
     when: development
     stat:
-      path: /vagrant/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz
+      path: /home/ubuntu/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz
       checksum_algorithm: sha256
     register: python_bintar_available
 
-  - name: Get Python binary checksum
+  - name: the python binary checksum is registered
     when: development and python_bintar_available.stat.exists
     shell:
-      cmd: sha256sum -c /vagrant/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz.sha256sum
+      cmd: sha256sum -c /home/ubuntu/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz.sha256sum
     register: python_bintar_checksum
 
-  - name: Verify Python binary checksum is ok
+  - name: the python binary checksum is ok
     when: python_bintar_checksum.rc is defined and python_bintar_checksum.rc == 0
     set_fact:
       python_bintar_ok: True
 
-  - name: Create Python installation directory
+  - name: the python installation directory is created
     file:
       path: /opt/python
       state: directory
 
-  - name: Install Python from binary tarball
+  - name: python is installed from the binary tarball
     when: development and python_bintar_ok
     unarchive:
       remote_src: yes
-      src: /vagrant/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz
+      src: /home/ubuntu/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz
       dest: /opt/python
 
   rescue:
   - name: Python binary installation failed, building from source
-    set_fact: 
+    set_fact:
       python_bintar_ok: False
 
 
-- name: Install Python build dependencies
+- name: python build dependencies are installed
   apt:
     package:
       - build-essential
@@ -90,7 +90,7 @@
       - xtrans-dev
       - zlib1g-dev
 
-- name: Install additional dependencies for Ubuntu Bionic
+- name: additional dependencies for Ubuntu Bionic are installed
   when: ansible_lsb.codename == 'bionic'
   apt:
     update-cache: yes
@@ -99,62 +99,62 @@
       - cpp-8
       - g++-8
 
-- name: Check if Python is already installed
+- name: existing python path is registered (if exists)
   stat:
     path: /opt/python/{{python_version}}
   register: python_path
 
-- name: Download Python source tarball
+- name: python source tarball is downloaded
   when: not python_path.stat.exists and not python_bintar_ok
   get_url:
     url: https://www.python.org/ftp/python/{{python_version}}/Python-{{python_version}}.tar.xz
     dest: /tmp
 
-- name: Untar Python source tarball
+- name: untar python source tarball is completed
   when: not python_path.stat.exists and not python_bintar_ok
   unarchive:
     src: /tmp/Python-{{python_version}}.tar.xz
     dest: /tmp
     remote_src: yes
 
-- name: Configure Python source
+- name: python source is configured
   when: not ansible_lsb.codename == 'bionic' and not python_path.stat.exists and not python_bintar_ok
-  command: 
+  command:
     cmd: ./configure --prefix=/opt/python/{{python_version}} --enable-optimizations
     chdir: /tmp/Python-{{python_version}}
 
-- name: Configure Python source under Ubuntu 18.04
+- name: python source under Ubuntu 18.04 is configured
   when: ansible_lsb.codename == 'bionic' and not python_path.stat.exists and not python_bintar_ok
   shell:
     cmd: CC=/usr/bin/gcc-8 CXX=/usr/bin/g++-8 CPP=/usr/bin/cpp-8 ./configure --prefix=/opt/python/{{python_version}} --enable-optimizations
     chdir: /tmp/Python-{{python_version}}
 
-- name: Build Python from source (takes a while)
+- name: python was built from source (takes a while)
   when: not python_path.stat.exists and not python_bintar_ok
-  command: 
+  command:
     cmd: make -j{{ansible_processor_vcpus}}
     chdir: /tmp/Python-{{python_version}}
 
-- name: Install Python from source
+- name: python was installed from source
   when: not python_path.stat.exists and not python_bintar_ok
   command:
     cmd: make install
     chdir: /tmp/Python-{{python_version}}
   register: python_source_installed
 
-- name: Create Python binary tarball
+- name: python binary tarball was created
   when: development and not python_source_installed.skipped is defined
   archive:
     path: /opt/python/{{python_version}}
-    dest: /vagrant/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz
+    dest: /home/ubuntu/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz
     format: xz
 
-- name: Store checksum of newly-created Python binary tarball
+- name: checksum of python binary tarball is stored
   when: development and not python_source_installed.skipped is defined
   shell:
-    cmd: sha256sum /vagrant/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz > /vagrant/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz.sha256sum
+    cmd: sha256sum /home/ubuntu/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz > /vagrant/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz.sha256sum
 
-- name: Install Python packages
+- name: essential python packages were installed
   pip:
     executable: /opt/python/{{python_version}}/bin/pip3
     name:
@@ -162,27 +162,26 @@
       - wheel
       - pipenv
 
-- name: Set up Python symlink
+- name: python symlink is setup
   file:
     src: /opt/python/{{python_version}}
     dest: /opt/python/current
     state: link
 
-- name: Prepend Python to PATH
+- name: python was prepended to the system PATH
   lineinfile:
     path: /etc/environment
     backrefs: yes
     regexp: ^(PATH=")(/usr.*)
     line: '\g<1>/opt/python/current/bin:\g<2>'
 
-- name: Make sure Pipenv creates venvs in-project
+- name: env variable for ensuring pipenv creates venvs within project was created
   lineinfile:
     path: /etc/environment
     regexp: '^PIPENV_VENV_IN_PROJECT=1$'
     line: 'PIPENV_VENV_IN_PROJECT=1'
 
-- name: Register custom Python path
+- name: custom python path was registered
   stat:
     path: /opt/python/current/bin
   register: custom_python_path
-
