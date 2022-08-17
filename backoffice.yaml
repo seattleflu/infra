@@ -13,7 +13,25 @@
   tasks:
     - import_tasks: tasks/registrations.yaml
     - import_tasks: tasks/apt-update.yaml
+<<<<<<< HEAD
     - import_tasks: tasks/ssh-keys.yaml
+=======
+      tags: [ init, operations, packages, apt ]
+    - import_tasks: tasks/postgres.yaml
+      tags: [ never, init, postgres ]
+    - import_tasks: tasks/python.yaml
+      tags: [ never, init, python ]
+    - import_tasks: tasks/backoffice-repos.yaml
+      tags: [ init, operations, packages, repos ]
+    - import_tasks: tasks/backoffice-pipenv.yaml
+      tags: [ init, operations, packages, pipenv ]
+    - import_tasks: tasks/systemd.yaml
+      tags: [ init, operations, packages, systemd ]
+    - import_tasks: tasks/switchboard.yaml
+      tags: [ init, operations, packages, switchboard ]
+    - import_tasks: tasks/husky-musher.yaml
+      tags: [ init, operations, packages, musher ]
+>>>>>>> b022f82 (Checkout all Backoffice Repos in `/opt` directory)
     - import_tasks: tasks/systemd.yaml
     - import_tasks: tasks/prometheus.yaml
     - import_tasks: tasks/promtail.yaml

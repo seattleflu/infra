@@ -1,5 +1,5 @@
 ---
-- name: create id3c-production pipenv
+- name: id3c-production pipenv was synced
   become: yes
   become_user: '{{app_user}}'
   environment:
@@ -8,20 +8,11 @@
     chdir: /opt/backoffice/id3c-production
     cmd: "pipenv sync"
 
-- name: create id3c-testing pipenv
+- name: id3c-testing pipenv was synced
   become: yes
   become_user: '{{app_user}}'
   environment:
     PATH: /opt/python/current/bin:{{ ansible_env.PATH }}
   command:
     chdir: /opt/backoffice/id3c-testing
-    cmd: "pipenv sync"
-
-- name: create wa-doh-linelists pipenv
-  become: yes
-  become_user: '{{app_user}}'
-  environment:
-    PATH: /opt/python/current/bin:{{ ansible_env.PATH }}
-  command:
-    chdir: /opt/backoffice/wa-doh-linelists
     cmd: "pipenv sync"
