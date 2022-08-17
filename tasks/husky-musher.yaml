@@ -1,0 +1,77 @@
+---
+- name: permissions on husky-musher directory are set
+  file:
+    path: /opt/husky-musher
+    state: directory
+    owner: '{{app_user}}'
+    group: '{{app_user}}'
+    recurse: yes
+
+- name: checked out latest version of husky-musher repository
+  become: yes
+  become_user: '{{app_user}}'
+  git:
+    repo: 'git@github.com:seattleflu/husky-musher.git'
+    dest: /opt/husky-musher
+    accept_hostkey: yes
+    force: yes
+
+- name: husky-musher pipenv was synced
+  become: yes
+  become_user: '{{app_user}}'
+  environment:
+    PATH: /opt/python/current/bin:{{ ansible_env.PATH }}
+  command:
+    chdir: /opt/husky-musher
+    cmd: "pipenv sync"
+
+- name: husky-musher log directory is setup
+  file:
+    path: /var/log/husky_musher
+    state: directory
+    owner: root
+    group: www-data
+    mode: 755
+
+- name: musher-logging group exists
+  group:
+    name: musher-logging
+    system: yes
+
+- name: user {{app_user}} is part of musher-logging group
+  user:
+    name: '{{app_user}}'
+    append: yes
+    groups:
+      - musher-logging
+
+- name: user www-data is part of musher-logging group
+  user:
+    name: www-data
+    append: yes
+    groups:
+      - musher-logging
+
+- name: musher-logging group can write to husky musher log dir
+  file:
+    path: /var/log/husky_musher
+    state: directory
+    group: musher-logging
+    mode: g=rwX
+
+- name: husky-musher cache directory is setup
+  file:
+    path: /home/ubuntu/husky-musher-cache
+    state: directory
+    owner: ubuntu
+    group: www-data
+    mode: u=rwX,g=rwX,o=rX
+
+# note X != x. X sets execute permissions only on directories, omitting this permission for files
+- name: husky-musher cache directories and db files have appropriate permissions
+  file:
+    path: /home/ubuntu/husky-musher-cache
+    owner: ubuntu
+    group: www-data
+    mode: u=rwX,g=rwX,o=rX
+    recurse: yes
