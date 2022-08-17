@@ -1,5 +1,5 @@
 ---
-- name: Python {{python_version}} is already installed
+- name: existing python path is registered (if exists)
   stat:
     path: /opt/python/{{python_version}}
   register: python_path
@@ -35,7 +35,7 @@
       state: directory
 
   - name: python is installed from the binary tarball
-    when: development and python_bintar_ok
+    when: development and python_bintar_ok and not python_path.stat.exists
     unarchive:
       remote_src: yes
       src: /home/ubuntu/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz
@@ -99,11 +99,6 @@
       - cpp-8
       - g++-8
 
-- name: existing python path is registered (if exists)
-  stat:
-    path: /opt/python/{{python_version}}
-  register: python_path
-
 - name: python source tarball is downloaded
   when: not python_path.stat.exists and not python_bintar_ok
   get_url:
@@ -152,7 +147,7 @@
 - name: checksum of python binary tarball is stored
   when: development and not python_source_installed.skipped is defined
   shell:
-    cmd: sha256sum /home/ubuntu/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz > /vagrant/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz.sha256sum
+    cmd: sha256sum /home/ubuntu/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz > /home/ubuntu/python-{{python_version}}-{{ansible_lsb.codename}}.tar.xz.sha256sum
 
 - name: essential python packages were installed
   pip:
