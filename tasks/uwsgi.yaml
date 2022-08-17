@@ -35,20 +35,3 @@
     owner: root
     group: root
     mode: ugo=r
-
-- name: uwsgi app logs readable by adm group
-  file:
-    path: /var/log/uwsgi/app/
-    state: directory
-    owner: root
-    group: adm
-    mode: u=rwX,g=rX,o=
-    recurse: yes
-
-- name: uwsgi app logs default to adm group
-  file:
-    path: /var/log/uwsgi/app/
-    state: directory
-    owner: root
-    group: adm
-    mode: u=rwx,go=rxs
