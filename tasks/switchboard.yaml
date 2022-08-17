@@ -7,11 +7,11 @@
     group: '{{app_user}}'
     recurse: yes
 
-- name: the latest version of the switchboard directory is checked out
+- name: checked out latest version of switchboard repository
   become: yes
   become_user: '{{app_user}}'
   git:
-    repo: 'git@github.com:/seattleflu/switchboard.git'
+    repo: 'git@github.com:seattleflu/switchboard.git'
     dest: /opt/sfs-switchboard
     accept_hostkey: yes
     force: yes
@@ -62,7 +62,6 @@
     group: nogroup
   with_items: '{{ filelist.files }}'
 
-- name: install switchboard virtualenv
 - name: switchboard virtualenv was installed
   become: yes
   become_user: "{{app_user}}"
