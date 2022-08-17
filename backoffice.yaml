@@ -1,6 +1,6 @@
 ---
-- name: backoffice
-  hosts: development, production
+- name: backoffice-base
+  hosts: all
   remote_user: ubuntu
   become: true
   vars:
@@ -12,63 +12,144 @@
 
   tasks:
     - import_tasks: tasks/registrations.yaml
+      tags: always # always run the registrations task so vars are set
+
     - import_tasks: tasks/apt-update.yaml
-<<<<<<< HEAD
-    - import_tasks: tasks/ssh-keys.yaml
-=======
-      tags: [ init, operations, packages, apt ]
-    - import_tasks: tasks/postgres.yaml
-      tags: [ never, init, postgres ]
+      tags: [ init, dependencies, apt ]
     - import_tasks: tasks/python.yaml
-      tags: [ never, init, python ]
-    - import_tasks: tasks/backoffice-repos.yaml
-      tags: [ init, operations, packages, repos ]
-    - import_tasks: tasks/backoffice-pipenv.yaml
-      tags: [ init, operations, packages, pipenv ]
-    - import_tasks: tasks/systemd.yaml
-      tags: [ init, operations, packages, systemd ]
-    - import_tasks: tasks/switchboard.yaml
-      tags: [ init, operations, packages, switchboard ]
-    - import_tasks: tasks/husky-musher.yaml
-      tags: [ init, operations, packages, musher ]
->>>>>>> b022f82 (Checkout all Backoffice Repos in `/opt` directory)
-    - import_tasks: tasks/systemd.yaml
-    - import_tasks: tasks/prometheus.yaml
-    - import_tasks: tasks/promtail.yaml
+      tags: [ init, dependencies, python ]
     - import_tasks: tasks/postgres.yaml
-    - import_tasks: tasks/python.yaml
-    - import_tasks: tasks/uwsgi.yaml
-    - import_tasks: tasks/backoffice-repos.yaml
-    - import_tasks: tasks/apache2.yaml
+      tags: [ init, dependencies, postgres ]
     - import_tasks: tasks/certbot.yaml
-    - import_tasks: tasks/dev-ssl-cert.yaml
-      when: development
-    - import_tasks: tasks/prod-ssl-cert.yaml
-      when: production
+      tags: [ init, dependencies, certbot ]
+
+    - import_tasks: tasks/apache2.yaml
+      tags: [ init, dependencies, apache2 ]
+      notify:
+        - reloaded apache2
+
+    - import_tasks: tasks/docker.yaml
+      tags: [ init, dependencies, docker ]
+      notify:
+        - restarted docker
+
+    - import_tasks: tasks/ssh-keys.yaml
+      tags: [init, ssh ]
+
+    - import_tasks: tasks/backoffice-repos.yaml
+      tags: [ init, deploy, backoffice, repos ]
     - import_tasks: tasks/backoffice-pipenv.yaml
+      tags: [ init, deploy, backoffice, pipenv ]
+      notify:
+        - re-read systemd units
+        - reloaded uwsgi api
+    - import_tasks: tasks/backoffice-cron.yaml
+      tags: [ init, deploy, backoffice, cron ]
+
     - import_tasks: tasks/switchboard.yaml
+      tags: [ init, deploy, switchboard ]
+      notify:
+        - re-read systemd units
+        - restarted sfs-switchboard
+    - import_tasks: tasks/husky-musher.yaml
+      tags: [ init, deploy, musher ]
+      notify:
+        - re-read systemd units
+        - reloaded uwsgi musher
+
+    - import_tasks: tasks/systemd.yaml
+      tags: [ init, deploy, systemd ]
+      notify:
+        - re-read systemd units
+    - import_tasks: tasks/uwsgi.yaml
+      tags: [ init, deploy, dependencies, uwsgi ]
+      notify:
+        - reloaded uwsgi api
+        - restarted sfs-switchboard
+        - reloaded uwsgi musher
+
+    - import_tasks: tasks/prometheus.yaml
+      tags: [ init, logging, dependencies, prometheus ]
+      notify:
+        - restarted prometheus
+        - reloaded prometheus
+        - restarted prometheus-node-exporter
+    - import_tasks: tasks/promtail.yaml
+      tags: [ init, logging, dependencies, promtail ]
+      notify:
+        - restarted promtail
+    - import_tasks: tasks/logrotate.yaml
+      tags: [ init, logging, dependencies, logrotate ]
 
   handlers:
-    - name: systemd units are re-read from disk
+    - name: re-read systemd units
       systemd:
         daemon_reload: yes
 
-    - name: prometheus is restarted
+    - name: restarted sfs-switchboard
+      systemd:
+        daemon_reload: yes
+        name: sfs-switchboard.service
+        state: restarted
+
+    - name: reloaded uwsgi api
+      systemd:
+        daemon_reload: yes
+        name: uwsgi@api-production
+        state: reloaded
+
+    - name: reloaded uwsgi musher
+      systemd:
+        daemon_reload: yes
+        name: uwsgi@husky-musher
+        state: reloaded
+
+    - name: reloaded apache2
+      systemd:
+        daemon_reload: yes
+        name: apache2.service
+        state: reloaded
+
+    - name: restarted prometheus
       service:
         name: prometheus
         state: restarted
 
-    - name: prometheus is reloaded
+    - name: reloaded prometheus
       service:
         name: prometheus
         state: reloaded
 
-    - name: prometheus-node-exporter is restarted
+    - name: restarted prometheus-node-exporter
       service:
         name: prometheus-node-exporter
         state: restarted
 
-    - name: promtail is restarted
+    - name: restarted promtail
       service:
         name: promtail
         state: restarted
+
+    - name: restarted docker
+      service:
+        name: docker
+        state: restarted
+
+
+- name: backoffice-ssl-dev
+  hosts: [ development, testing ]
+  remote_user: ubuntu
+  become: true
+
+  tasks:
+    - import_tasks: tasks/dev-ssl-cert.yaml
+      tags: [ init, ssl ]
+
+- name: backoffice-ssl-prod
+  hosts: production
+  remote_user: ubuntu
+  become: true
+
+  tasks:
+    - import_tasks: tasks/prod-ssl-cert.yaml
+      tags: [ init, ssl ]

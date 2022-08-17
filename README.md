@@ -19,7 +19,7 @@ Requirements for using this repository:
     authorized SSH keypair for backoffice.seattleflu.org
 
   - For local development: a [Multipass](https://multipass.run) instance named
-    `backoffice` (see below)
+    `backoffice-dev` (see below)
 
 
 ## Organization
@@ -56,11 +56,35 @@ To test your connection to our hosts:
 
 To run a playbook in development:
 
+    ansible-playbook a-playbook.yaml -i inventory/development --limit "development"
+
+To run a playbook in testing:
+
+    ansible-playbook a-playbook.yaml -i inventory/development/testing --limit "testing"
+
+To run a playbook in both development and testing:
+
     ansible-playbook a-playbook.yaml -i inventory/development
 
 To run a playbook in production, change the inventory used:
 
     ansible-playbook a-playbook.yaml -i inventory/production
+
+If that run will be accessing vault secrets, make sure you also specify the vault id:
+
+    ansible-playbook a-playbook.yaml -i inventory/production --vault-id seattleflu@prompt
+
+Note that you should never need the vault password when running playbooks against our
+development environments, as secret installs are limited to production runs.
+
+You can also run playbooks with tags, to limit what is run. For a list of available
+tags, simply run:
+
+    ansible-playbook a-playbook.yaml --list-tags
+
+You can pass these tags with:
+
+    ansible-playbook a-playbook.yaml --tags "configuration,packages"
 
 
 ## Writing playbooks
@@ -114,13 +138,13 @@ matches production.  For now "closely matches" means only the same Ubuntu
 version, but this will naturally become higher fidelity as we describe more of
 our infrastructure using Ansible!
 
-Create a `backoffice` instance:
+Create a `backoffice-dev` instance:
 
-    multipass launch --name backoffice 18.04    # Ubuntu 18.04 LTS
+    multipass launch --name backoffice-dev 18.04 --disk 10G   # Ubuntu 18.04 LTS
 
 Add your SSH public keys so that Ansible can login via SSH:
 
-    ssh-add -L | multipass exec backoffice -- tee -a /home/ubuntu/.ssh/authorized_keys
+    ssh-add -L | multipass exec backoffice-dev -- tee -a /home/ubuntu/.ssh/authorized_keys
 
 Now test that Ansible can login by issuing an ad-hoc ping:
 
@@ -140,13 +164,13 @@ inventory (*inventory*, which is a yaml file).  You should see green text saying
 For other troubleshooting, you can get a shell on your new instance at any point
 with:
 
-    multipass shell backoffice
+    multipass shell backoffice-dev
 
-If you want to start from a clean slate, delete the `backoffice` instance and
+If you want to start from a clean slate, delete the `backoffice-dev` instance and
 SSH's remembered host key (to avoid errors about the new instance's different
 host key):
 
-    multipass delete --purge backoffice
-    ssh-keygen -R backoffice.multipass
+    multipass delete --purge backoffice-dev
+    ssh-keygen -R backoffice-dev.multipass
 
 Then re-create the instance as above.
