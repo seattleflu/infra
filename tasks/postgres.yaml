@@ -34,3 +34,21 @@
     update_cache: yes
     pkg:
       - libpq-dev
+
+- name: added backoffice pg_service file
+  copy:
+    src: files/etc/postgres/.pg_service.conf
+    dest: ~/.pg_service.conf
+    owner: ubuntu
+    group: ubuntu
+    mode: ug=r,o=
+
+# don't install our passwords on development environments
+- name: postgres password file is installed
+  when: not development
+  copy:
+    src: files/etc/postgres/.pgpass
+    dest: ~/.pgpass
+    owner: ubuntu
+    group: ubuntu
+    mode: u=rw,go=
