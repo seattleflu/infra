@@ -1,0 +1,16 @@
+---
+- name: global logrotate configuration is applied
+  copy:
+    src: files/etc/logrotate/logrotate.conf
+    dest: /etc/logrotate.conf
+    owner: root
+    group: root
+    mode: u=rw,go=r
+
+- name: logrotate configuration is applied to musher and prometheus
+  copy:
+    src: files/etc/logrotate/logrotate.d
+    dest: /etc
+    owner: root
+    group: root
+    mode: u=rw,go=r
