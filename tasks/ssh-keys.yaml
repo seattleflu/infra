@@ -1,18 +1,4 @@
 ---
-- name: ensure development SSH keys are installed to root user's home
-  when: development
-  copy:
-    src: /vagrant/.ssh
-    dest: /root
-    remote_src: yes
-
-- name: ensure development SSH keys are installed to {{app_user}} user's home
-  when: development
-  copy:
-    src: /vagrant/.ssh
-    dest: /home/{{app_user}}
-    remote_src: yes
-
 - name: enforce permissions on root's SSH directory
   file:
     path: /root/.ssh
@@ -28,4 +14,3 @@
     group: '{{app_user}}'
     mode: go-rwx
     recurse: yes
-
