@@ -11,6 +11,7 @@
       - husky-musher
 
   tasks:
+    - import_tasks: tasks/registrations.yaml
     - import_tasks: tasks/apt-update.yaml
     - import_tasks: tasks/ssh-keys.yaml
     - import_tasks: tasks/systemd.yaml

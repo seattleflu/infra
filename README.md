@@ -30,7 +30,8 @@ The layout of this repository is:
 
     *.yaml          — Playbooks (e.g. backoffice.yaml)
 
-    inventory       - An inventory of our hosts.
+    inventory/       - An inventory of our hosts.
+      …
 
     tasks/          — Conceptual groupings of tasks for use by playbooks
       …

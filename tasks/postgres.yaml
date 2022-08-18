@@ -1,9 +1,4 @@
 ---
-- name: check if Postgres PGDG key is already installed
-  stat:
-    path: /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg
-  register: pgdg_key_path
-
 - name: download upstream Postgres GPG keys
   when: not pgdg_key_path.stat.exists
   get_url:

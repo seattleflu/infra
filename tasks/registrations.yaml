@@ -1,0 +1,29 @@
+---
+- name: checked if Python {{python_version}} is already installed
+  stat:
+    path: /opt/python/{{python_version}}
+  register: python_path
+
+- name: custom python path was registered
+  stat:
+    path: /opt/python/current/bin
+  register: custom_python_path
+
+- name: checked if Postgres PGDG key is already installed
+  stat:
+    path: /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg
+  register: pgdg_key_path
+
+- name: checked if any sqllite nogroup/noowner file paths were found
+  find:
+    paths: /opt/sfs-switchboard/data
+    file_type: file
+    patterns: "sfs-redcap.sqlite-*"
+  register: filelist
+
+- name: ensured /opt had owner and group ubuntu
+  become: yes
+  file:
+    path: /opt
+    owner: ubuntu
+    group: ubuntu

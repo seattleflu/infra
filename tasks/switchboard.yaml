@@ -63,6 +63,7 @@
   with_items: '{{ filelist.files }}'
 
 - name: install switchboard virtualenv
+- name: switchboard virtualenv was installed
   become: yes
   become_user: "{{app_user}}"
   environment:
