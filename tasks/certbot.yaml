@@ -1,13 +1,29 @@
 ---
-- name: Install certbot via pip on Ubuntu 18
+- name: installed certbot via pip on Ubuntu 18
   when: ansible_lsb.codename == 'bionic'
   pip:
     executable: /opt/python/{{python_version}}/bin/pip3
     name:
       - certbot
 
-- name: Install certbot via apt on Ubuntu 20/22
+- name: installed apache certbot via apt on Ubuntu 18
+  when: ansible_lsb.codename == 'bionic'
+  apt:
+    package:
+      python3-certbot-apache
+
+- name: installed certbot and apache certbot via apt on Ubuntu 20/22
   when: ansible_lsb.codename != 'bionic'
   apt:
     package:
       - certbot
+      - python3-certbot-apache
+
+- name: ensured ssl conf file is copied to the appropriate location
+  become: yes
+  copy:
+    src: /usr/lib/python3/dist-packages/certbot_apache/options-ssl-apache.conf
+    dest: /etc/letsencrypt/options-ssl-apache.conf
+    owner: root
+    group: root
+    remote_src: yes

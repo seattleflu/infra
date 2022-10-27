@@ -4,6 +4,11 @@
     path: /etc/letsencrypt/live/backoffice.seattleflu.org
     state: directory
 
+- name: the self-signed cert archive directory was created
+  file:
+    path: /etc/letsencrypt/archive/backoffice.seattleflu.org
+    state: directory
+
 - name: Python modules required to create a certificate were installed
   apt:
     update_cache: yes
