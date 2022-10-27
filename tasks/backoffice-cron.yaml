@@ -1,0 +1,5 @@
+---
+- name: backoffice crontabs were made
+  become: yes
+  make:
+    chdir: /opt/backoffice/crontabs
