@@ -149,6 +149,16 @@
   hosts: production
   remote_user: ubuntu
   become: true
+  vars:
+    accepted_algorithms:
+      - sha224WithRSAEncryption
+      - sha256WithRSAEncryption
+      - sha384WithRSAEncryption
+      - sha512WithRSAEncryption
+      - sha224WithECDSAEncryption
+      - sha256WithECDSAEncryption
+      - sha384WithECDSAEncryption
+      - sha512WithECDSAEncryption
 
   tasks:
     - import_tasks: tasks/prod-ssl-cert.yaml

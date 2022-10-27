@@ -1,7 +1,46 @@
 ---
-# This is a placeholder for the production process
-# We obviously don't want to screw up current prod with a new cert
 - name: set up certbot repository
   apt:
     package:
       - apache2-bin
+
+- name: Get information on the existing certificate
+  community.crypto.x509_certificate_info:
+    path: /etc/letsencrypt/live/backoffice.seattleflu.org/fullchain.pem
+  register: cert
+
+- name: Validated that the existing certificate was issued by Let's Encrypt US and is currently valid
+  assert:
+    that:
+      - "cert.issuer.countryName == 'US'"
+      - "cert.issuer.organizationName == 'Let\\'s Encrypt'"
+      - not cert.expired
+
+- name: Registered whether the existing certificate will be valid in two weeks
+  openssl_certificate_info:
+    path: /etc/letsencrypt/live/backoffice.seattleflu.org/fullchain.pem
+    valid_at:
+      point_1: "+2w"
+  register: result
+
+- name: Validated that the existing certificate is valid in two weeks
+  assert:
+    that:
+      - result.valid_at.point_1
+
+- name: Validated that the existing certificate has the expected domain
+  assert:
+    that:
+      - "cert.subject.commonName == 'backoffice.seattleflu.org'"
+
+- name: Validated that the existing certificate uses a modern encryption algorithm
+  assert:
+    that:
+      - "cert.signature_algorithm in {{ accepted_algorithms }}"
+
+
+- name: Validated that the existing certificate is only used for key encryption and digital signatures
+  assert:
+    that:
+      - "'Digital Signature' in cert.key_usage"
+      - "'Key Encipherment' in cert.key_usage"
