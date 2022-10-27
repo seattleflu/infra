@@ -1,0 +1,46 @@
+---
+- name: docker apt dependencies were installed
+  apt:
+    update_cache: yes
+    package:
+      - apt-transport-https
+      - ca-certificates
+      - libcurl4
+      - curl
+      - software-properties-common
+    install_recommends: yes
+
+- name: ensured gpg key was installed
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: added docker repository to apt
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu bionic stable
+    state: present
+
+- name: installed docker
+  apt:
+    update_cache: yes
+    state: present
+    package:
+      - docker-ce
+
+- name: docker group exists
+  group:
+    name: docker
+    system: yes
+
+- name: user {{app_user}} is part of docker group
+  user:
+    name: '{{app_user}}'
+    append: yes
+    groups:
+      - docker
+
+- name: docker was started and enabled
+  service:
+    name: docker
+    state: started
+    enabled: yes
