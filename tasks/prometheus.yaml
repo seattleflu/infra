@@ -36,7 +36,7 @@
     regexp: '^ARGS='
     line: 'ARGS="--web.listen-address=127.0.0.1:9090 --web.external-url=https://{{inventory_hostname}}/prometheus/ --web.route-prefix=/"'
   notify:
-    - prometheus is restarted
+    - restarted prometheus
 
 - name: prometheus settings are configured
   template:
@@ -45,8 +45,17 @@
     owner: prometheus
     group: prometheus
     mode: ug=r,o=
-  notify:
-    - prometheus is reloaded
+
+- name: prometheus-node-exporter invocation is configured
+  replace:
+    path: /etc/default/prometheus-node-exporter
+    regexp: '(?ms)^ARGS=".+?"$'
+    replace: |-
+      ARGS="--collector.diskstats.ignored-devices=(ram|loop|fd|(h|s|v|xv)d[a-z]|nvme\\\\\\\\dn\\\\\\\\d?p?)\\\\\\\\d+ \
+            --collector.filesystem.ignored-mount-points=^/(sys|proc|dev|run|var\/lib\/docker\/containers\/.*\/mounts\/shm|var\/lib\/docker\/overlay2\/.*\/merged)($|/) \
+            --collector.netdev.ignored-devices=^lo$ \
+            --collector.textfile.directory=/var/lib/prometheus/node-exporter \
+            --collector.systemd"
 
 - name: prometheus-node-exporter invocation is configured
   replace:
