@@ -27,6 +27,8 @@
       tags: [ init, dependencies, apache2 ]
       notify:
         - reloaded apache2
+    - import_tasks: tasks/shibboleth.yaml
+      tags: [ init, dependencies, shib ]
 
     - import_tasks: tasks/docker.yaml
       tags: [ init, dependencies, docker ]

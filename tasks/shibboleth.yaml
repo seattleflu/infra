@@ -1,0 +1,63 @@
+---
+- name: SWITCH repository source file was downloaded
+  get_url:
+    url: https://pkg.switch.ch/switchaai/ubuntu/dists/bionic/main/binary-all/misc/switchaai-apt-source_1.0.0ubuntu1_all.deb
+    dest: /etc/apt/sources.list.d/switchaai-apt-source_1.0.0ubuntu1_all.deb
+
+- name: SWITCH repository was added as an apt source
+  apt:
+    update_cache: yes
+    deb: /etc/apt/sources.list.d/switchaai-apt-source_1.0.0ubuntu1_all.deb
+
+- name: shibboleth is installed
+  apt:
+    package:
+      - shibboleth
+    install_recommends: yes
+
+- name: checked out latest version of shibboleth repository
+  become: yes
+  become_user: '{{app_user}}'
+  git:
+    repo: 'git@github.com:seattleflu/backoffice-shibboleth.git'
+    dest: /opt/backoffice-shibboleth
+    accept_hostkey: yes
+    force: yes
+
+- name: installed the latest version of the shibboleth repository
+  become: yes
+  copy:
+    remote_src: yes
+    src: /opt/backoffice-shibboleth/
+    dest: /etc/shibboleth
+
+- name: shibboleth temp directory in /opt was removed
+  file:
+    state: absent
+    path: /opt/backoffice-shibboleth/
+
+# only install key and cert in production environments
+- name: shibboleth key and cert were installed
+  become: yes
+  when: not development
+  copy:
+    src: files/etc/shibboleth/
+    dest: /etc/shibboleth
+
+- name: permissions on shibboleth certificate was set
+  when: not development
+  file:
+    path: /etc/shibboleth/sp-cert.pem
+    state: file
+    owner: _shibd
+    group: _shibd
+    mode: u=rw,go=r
+
+- name: permissions on shibboleth key was set
+  when: not development
+  file:
+    path: /etc/shibboleth/sp-key.pem
+    state: file
+    owner: _shibd
+    group: _shibd
+    mode: u=rw,go=
