@@ -8,6 +8,7 @@
   apt:
     update_cache: yes
     deb: /etc/apt/sources.list.d/switchaai-apt-source_1.0.0ubuntu1_all.deb
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: shibboleth is installed
   apt:
@@ -30,6 +31,7 @@
     remote_src: yes
     src: /opt/backoffice-shibboleth/
     dest: /etc/shibboleth
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: shibboleth temp directory in /opt was removed
   file:
@@ -43,6 +45,7 @@
   copy:
     src: files/etc/shibboleth/
     dest: /etc/shibboleth
+  diff: no
 
 - name: permissions on shibboleth certificate was set
   when: not development

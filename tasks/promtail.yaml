@@ -60,6 +60,7 @@
     owner: promtail
     group: promtail
     mode: ug=r,o=
+  diff: no
 
 # don't install our passwords on development environments
 - name: promtail is enabled

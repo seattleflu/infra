@@ -16,6 +16,7 @@
     dest: /opt/backoffice-apache2
     accept_hostkey: yes
     force: yes
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: installed the latest version of the apache2 repository
   become: yes
@@ -24,6 +25,7 @@
     src: /opt/backoffice-apache2/
     dest: /etc/apache2
     local_follow: no
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: apache2 temp directory in /opt was removed
   file:

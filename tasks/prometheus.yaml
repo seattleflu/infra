@@ -34,7 +34,7 @@
   lineinfile:
     path: /etc/default/prometheus
     regexp: '^ARGS='
-    line: 'ARGS="--web.listen-address=127.0.0.1:9090 --web.external-url=https://{{inventory_hostname}}/prometheus/ --web.route-prefix=/"'
+    line: 'ARGS="--web.listen-address=127.0.0.1:9090 --web.external-url=https://{{ansible_host}}/prometheus/ --web.route-prefix=/"'
   notify:
     - restarted prometheus
 

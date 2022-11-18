@@ -33,7 +33,7 @@
 - name: added backoffice pg_service file
   copy:
     src: files/etc/postgres/.pg_service.conf
-    dest: ~/.pg_service.conf
+    dest: /home/ubuntu/.pg_service.conf
     owner: ubuntu
     group: ubuntu
     mode: ug=r,o=
@@ -47,3 +47,4 @@
     owner: ubuntu
     group: ubuntu
     mode: u=rw,go=
+  diff: no

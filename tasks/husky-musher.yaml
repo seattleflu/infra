@@ -25,14 +25,6 @@
     chdir: /opt/husky-musher
     cmd: "pipenv sync"
 
-- name: husky-musher log directory is setup
-  file:
-    path: /var/log/husky_musher
-    state: directory
-    owner: root
-    group: www-data
-    mode: 755
-
 - name: musher-logging group exists
   group:
     name: musher-logging
@@ -51,6 +43,14 @@
     append: yes
     groups:
       - musher-logging
+
+- name: husky-musher log directory is setup
+  file:
+    path: /var/log/husky_musher
+    state: directory
+    owner: root
+    group: musher-logging
+    mode: 755
 
 - name: musher-logging group can write to husky musher log dir
   file:

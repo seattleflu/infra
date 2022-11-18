@@ -26,6 +26,7 @@
     state: present
     package:
       - docker-ce
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: docker group exists
   group:
